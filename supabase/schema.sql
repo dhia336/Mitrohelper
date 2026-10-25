@@ -1,0 +1,215 @@
+-- Run once in Supabase > SQL Editor. Safe to extend later (add rows, not code).
+create table lines(id text primary key, color text not null, sort int);
+create table stations(id serial primary key, line_id text references lines on delete cascade, pos int not null, ar text, fr text, en text);
+create table sightings(id bigserial primary key, station_id int references stations on delete cascade, dir char(1) check (dir in ('a','b')),
+  seen_at timestamptz default now(), dev text, ip text, up int default 0, down int default 0);
+create index on sightings(seen_at desc);
+create table votes(sighting_id bigint references sightings on delete cascade, dev text, v int, primary key(sighting_id,dev));
+alter table lines enable row level security; alter table stations enable row level security;
+alter table sightings enable row level security; alter table votes enable row level security;
+create policy rd on lines for select using (true);
+create policy rd on stations for select using (true);
+-- sightings/votes: NO policies => anon cannot read or write them directly. Only the functions below.
+create view live as select s.id, st.line_id, s.station_id, s.dir, s.seen_at, s.up, s.down
+  from sightings s join stations st on st.id=s.station_id
+  where s.seen_at > now()-interval '45 minutes' and s.down - s.up < 2;
+grant select on lines, stations, live to anon;
+
+-- ===== v2: breakdown reports, hardened functions (writes only via the Worker with the secret key) =====
+alter table votes add column if not exists ip text;
+alter table votes add column if not exists at timestamptz default now();
+create table if not exists banned(k text primary key);
+create table if not exists incidents(id bigserial primary key, station_id int references stations on delete cascade,
+  seen_at timestamptz default now(), dev text, ip text, up int default 0, down int default 0);
+create index if not exists incidents_seen on incidents(seen_at desc);
+create table if not exists incident_votes(incident_id bigint references incidents on delete cascade, dev text, v int, ip text,
+  at timestamptz default now(), primary key(incident_id,dev));
+alter table banned enable row level security; alter table incidents enable row level security; alter table incident_votes enable row level security;
+create or replace view live_incidents as select i.id, st.line_id, i.station_id, i.seen_at, i.up, i.down
+  from incidents i join stations st on st.id=i.station_id
+  where i.seen_at > now()-interval '90 minutes' and i.down - i.up < 2;
+grant select on live_incidents to anon;
+
+drop function if exists report(int,text,text); drop function if exists vote(bigint,int,text);
+
+create or replace function report(p_station int, p_dir text, p_dev text, p_ip text) returns text
+language plpgsql security definer set search_path=public as $$
+declare v_ip text := md5(coalesce(p_ip,'?'));
+begin
+  if p_dev is null or length(p_dev)<16 or p_dir not in ('a','b') then return 'bad'; end if;
+  if exists(select 1 from banned where k in (p_dev,v_ip)) then return 'bad'; end if;
+  if not exists(select 1 from stations where id=p_station) then return 'bad'; end if;
+  if exists(select 1 from sightings where dev=p_dev and seen_at>now()-interval '2 minutes') then return 'slow'; end if;
+  if (select count(*) from sightings where ip=v_ip and seen_at>now()-interval '1 hour')>120 then return 'slow'; end if; -- generous: mobile carriers share IPs
+  insert into sightings(station_id,dir,dev,ip) values(p_station,p_dir,p_dev,v_ip);
+  return 'ok';
+end $$;
+
+create or replace function vote(p_id bigint, p_v int, p_dev text, p_ip text) returns text
+language plpgsql security definer set search_path=public as $$
+declare v_ip text := md5(coalesce(p_ip,'?'));
+begin
+  if p_dev is null or length(p_dev)<16 or p_v not in (1,-1) then return 'bad'; end if;
+  if exists(select 1 from banned where k in (p_dev,v_ip)) then return 'bad'; end if;
+  if (select count(*) from votes where ip=v_ip and at>now()-interval '1 hour')>200 then return 'slow'; end if;
+  insert into votes(sighting_id,dev,v,ip) values(p_id,p_dev,p_v,v_ip) on conflict do nothing;
+  if not found then return 'dup'; end if;
+  update sightings set up=up+(p_v=1)::int, down=down+(p_v=-1)::int where id=p_id;
+  return 'ok';
+end $$;
+
+create or replace function report_incident(p_station int, p_dev text, p_ip text) returns text
+language plpgsql security definer set search_path=public as $$
+declare v_ip text := md5(coalesce(p_ip,'?')); v_id bigint;
+begin
+  if p_dev is null or length(p_dev)<16 then return 'bad'; end if;
+  if exists(select 1 from banned where k in (p_dev,v_ip)) then return 'bad'; end if;
+  if not exists(select 1 from stations where id=p_station) then return 'bad'; end if;
+  if exists(select 1 from incidents where dev=p_dev and seen_at>now()-interval '10 minutes') then return 'slow'; end if;
+  if (select count(*) from incidents where ip=v_ip and seen_at>now()-interval '1 hour')>30 then return 'slow'; end if;
+  select id into v_id from incidents where station_id=p_station and seen_at>now()-interval '90 minutes' and down-up<2 order by seen_at desc limit 1;
+  if v_id is not null then  -- same problem already reported here: count as a confirmation
+    insert into incident_votes(incident_id,dev,v,ip) values(v_id,p_dev,1,v_ip) on conflict do nothing;
+    if found then update incidents set up=up+1 where id=v_id; end if;
+    return 'ok';
+  end if;
+  insert into incidents(station_id,dev,ip,up) values(p_station,p_dev,v_ip,1) returning id into v_id;
+  insert into incident_votes(incident_id,dev,v,ip) values(v_id,p_dev,1,v_ip);
+  return 'ok';
+end $$;
+
+create or replace function vote_incident(p_id bigint, p_v int, p_dev text, p_ip text) returns text
+language plpgsql security definer set search_path=public as $$
+declare v_ip text := md5(coalesce(p_ip,'?'));
+begin
+  if p_dev is null or length(p_dev)<16 or p_v not in (1,-1) then return 'bad'; end if;
+  if exists(select 1 from banned where k in (p_dev,v_ip)) then return 'bad'; end if;
+  if (select count(*) from incident_votes where ip=v_ip and at>now()-interval '1 hour')>200 then return 'slow'; end if;
+  insert into incident_votes(incident_id,dev,v,ip) values(p_id,p_dev,p_v,v_ip) on conflict do nothing;
+  if not found then return 'dup'; end if;
+  update incidents set up=up+(p_v=1)::int, down=down+(p_v=-1)::int where id=p_id;
+  return 'ok';
+end $$;
+
+create or replace function purge_old() returns int
+language plpgsql security definer set search_path=public as $$
+declare n int; m int;
+begin
+  delete from sightings where seen_at<now()-interval '90 days'; get diagnostics n=row_count;
+  delete from incidents where seen_at<now()-interval '90 days'; get diagnostics m=row_count;
+  return n+m;
+end $$;
+
+-- Supabase grants EXECUTE to anon by default: remove it explicitly. Only the Worker (service_role/secret key) may call these.
+revoke all on function report(int,text,text,text), vote(bigint,int,text,text), report_incident(int,text,text), vote_incident(bigint,int,text,text), purge_old() from public, anon, authenticated;
+grant execute on function report(int,text,text,text), vote(bigint,int,text,text), report_incident(int,text,text), vote_incident(bigint,int,text,text), purge_old() to service_role;
+
+-- Data. pos = order along the line (gaps of 10 so you can insert stations between). First pos = direction "b" end, last = "a" end.
+insert into lines values ('1','#ff4d5e',1),('2','#ffa31a',2),('3','#1fd1b0',3),('4','#3b82f6',4),('5','#a855f7',5),('6','#ec4899',6),('TGM','#84cc16',7);
+insert into stations(line_id,pos,ar,fr,en) values
+('1',10,'Place de Barcelone','Place de Barcelone','Place de Barcelone'),
+('1',20,'Bab Alioua','Bab Alioua','Bab Alioua'),
+('1',30,'Mohamed Manachou','Mohamed Manachou','Mohamed Manachou'),
+('1',40,'13 Aout','13 Aout','13 Aout'),
+('1',50,'Mohamed Ali','Mohamed Ali','Mohamed Ali'),
+('1',60,'El Kabaria','El Kabaria','El Kabaria'),
+('1',70,'Ibn Sina','Ibn Sina','Ibn Sina'),
+('1',80,'El Ouardia 6','El Ouardia 6','El Ouardia 6'),
+('1',90,'Cité Ennour','Cité Ennour','Cité Ennour'),
+('1',100,'Abou Kacem Echebbi','Abou Kacem Echebbi','Abou Kacem Echebbi'),
+('1',110,'Ben Arous','Ben Arous','Ben Arous'),
+('2',10,'Place de la République','Place de la République','Place de la République'),
+('2',20,'Nelson Mandela','Nelson Mandela','Nelson Mandela'),
+('2',30,'Mohamed V','Mohamed V','Mohamed V'),
+('2',40,'Place de Palestine','Place de Palestine','Place de Palestine'),
+('2',50,'Les Jardins','Les Jardins','Les Jardins'),
+('2',60,'Cité El Khadhra','Cité El Khadhra','Cité El Khadhra'),
+('2',70,'La Jeunesse','La Jeunesse','La Jeunesse'),
+('2',80,'Cité Sportive','Cité Sportive','Cité Sportive'),
+('2',90,'10 Décembre 1948','10 Décembre 1948','10 Décembre 1948'),
+('2',100,'Cité des Sciences','Cité des Sciences','Cité des Sciences'),
+('2',110,'L''Independance','L''Independance','L''Independance'),
+('2',120,'Ariana','Ariana','Ariana'),
+('3',10,'Tunis Marine','Tunis Marine','Tunis Marine'),
+('3',20,'Farhat Hached','Farhat Hached','Farhat Hached'),
+('3',30,'Place de Barcelone','Place de Barcelone','Place de Barcelone'),
+('3',40,'Place de la République','Place de la République','Place de la République'),
+('3',50,'Bab El Khadhra','Bab El Khadhra','Bab El Khadhra'),
+('3',60,'Bab Laassal','Bab Laassal','Bab Laassal'),
+('3',70,'Bab Saadoun','Bab Saadoun','Bab Saadoun'),
+('3',80,'Campus Manar','Campus Manar','Campus Manar'),
+('3',90,'14 Jan 2011','14 Jan 2011','14 Jan 2011'),
+('3',100,'Les Jasmins','Les Jasmins','Les Jasmins'),
+('3',110,'Ibn Khaldoun','Ibn Khaldoun','Ibn Khaldoun'),
+('4',10,'Place de Barcelone','Place de Barcelone','Place de Barcelone'),
+('4',20,'Place de la République','Place de la République','Place de la République'),
+('4',30,'Bab El Khadhra','Bab El Khadhra','Bab El Khadhra'),
+('4',40,'Bab Laassal','Bab Laassal','Bab Laassal'),
+('4',50,'Bab Saadoun','Bab Saadoun','Bab Saadoun'),
+('4',60,'Bouchoucha','Bouchoucha','Bouchoucha'),
+('4',70,'20 Mars','20 Mars','20 Mars'),
+('4',80,'Bardo','Bardo','Bardo'),
+('4',90,'Essaidia','Essaidia','Essaidia'),
+('4',100,'Khaznadar','Khaznadar','Khaznadar'),
+('4',110,'L''Artisanat','L''Artisanat','L''Artisanat'),
+('4',120,'Denden','Denden','Denden'),
+('4',130,'Manouba','Manouba','Manouba'),
+('4',140,'Slimane Kahia','Slimane Kahia','Slimane Kahia'),
+('4',150,'Moncef Bey','Moncef Bey','Moncef Bey'),
+('4',160,'Aboubaker El Razi','Aboubaker El Razi','Aboubaker El Razi'),
+('4',170,'Le Pole Tech','Le Pole Tech','Le Pole Tech'),
+('4',180,'Ksar El Warda','Ksar El Warda','Ksar El Warda'),
+('4',190,'Le Campus','Le Campus','Le Campus'),
+('4',200,'Kheireddine','Kheireddine','Kheireddine'),
+('5',10,'Place de Barcelone','Place de Barcelone','Place de Barcelone'),
+('5',20,'Place de la République','Place de la République','Place de la République'),
+('5',30,'Bab El Khadhra','Bab El Khadhra','Bab El Khadhra'),
+('5',40,'Bab Laassal','Bab Laassal','Bab Laassal'),
+('5',50,'Bab Saadoun','Bab Saadoun','Bab Saadoun'),
+('5',60,'Mefteh Saadallah','Mefteh Saadallah','Mefteh Saadallah'),
+('5',70,'Rommana','Rommana','Rommana'),
+('5',80,'Campus Manar','Campus Manar','Campus Manar'),
+('5',90,'14 Jan 2011','14 Jan 2011','14 Jan 2011'),
+('5',100,'Les Jasmins','Les Jasmins','Les Jasmins'),
+('5',110,'Ettahrir','Ettahrir','Ettahrir'),
+('5',120,'Omrane Sup','Omrane Sup','Omrane Sup'),
+('5',130,'Ettadhamen','Ettadhamen','Ettadhamen'),
+('5',140,'Intikala','Intikala','Intikala'),
+('6',10,'Tunis Marine','Tunis Marine','Tunis Marine'),
+('6',20,'Farhat Hached','Farhat Hached','Farhat Hached'),
+('6',30,'Place de Barcelone','Place de Barcelone','Place de Barcelone'),
+('6',40,'Bab Alioua','Bab Alioua','Bab Alioua'),
+('6',50,'Mohamed Manachou','Mohamed Manachou','Mohamed Manachou'),
+('6',60,'13 Aout','13 Aout','13 Aout'),
+('6',70,'Mohamed Ali','Mohamed Ali','Mohamed Ali'),
+('6',80,'Taher Haddad','Taher Haddad','Taher Haddad'),
+('6',90,'Ghazeli','Ghazeli','Ghazeli'),
+('6',100,'Cité Municipale','Cité Municipale','Cité Municipale'),
+('6',110,'Ennesri','Ennesri','Ennesri'),
+('6',120,'El Montazah','El Montazah','El Montazah'),
+('6',130,'El Mourouj 2','El Mourouj 2','El Mourouj 2'),
+('6',140,'El Mourouj 1','El Mourouj 1','El Mourouj 1'),
+('6',150,'L''Environnement','L''Environnement','L''Environnement'),
+('6',160,'El Mourouj 3','El Mourouj 3','El Mourouj 3'),
+('6',170,'Les Martyrs','Les Martyrs','Les Martyrs'),
+('6',180,'El Mourouj 4','El Mourouj 4','El Mourouj 4'),
+('TGM',10,'Tunis Marine','Tunis Marine','Tunis Marine'),
+('TGM',20,'Le Bac','Le Bac','Le Bac'),
+('TGM',30,'La Goulette','La Goulette','La Goulette'),
+('TGM',40,'La Goulette Neuve','La Goulette Neuve','La Goulette Neuve'),
+('TGM',50,'La Goulette Casino','La Goulette Casino','La Goulette Casino'),
+('TGM',60,'Kheireddine','Kheireddine','Kheireddine'),
+('TGM',70,'L''Aeroport','L''Aeroport','L''Aeroport'),
+('TGM',80,'Le Kram','Le Kram','Le Kram'),
+('TGM',90,'Carthage Byrsa','Carthage Byrsa','Carthage Byrsa'),
+('TGM',100,'Carthage Dermech','Carthage Dermech','Carthage Dermech'),
+('TGM',110,'Carthage Hannibal','Carthage Hannibal','Carthage Hannibal'),
+('TGM',120,'Carthage Presidence','Carthage Presidence','Carthage Presidence'),
+('TGM',130,'Carthage Amilcar','Carthage Amilcar','Carthage Amilcar'),
+('TGM',140,'Sidi Bou Said','Sidi Bou Said','Sidi Bou Said'),
+('TGM',150,'Sidi Dhrif','Sidi Dhrif','Sidi Dhrif'),
+('TGM',160,'La Corniche','La Corniche','La Corniche'),
+('TGM',170,'Marsa Plage','Marsa Plage','Marsa Plage');
+
+-- Optional cleanup (enable pg_cron in Database > Extensions first):
+-- select cron.schedule('purge','0 3 * * *',$$delete from sightings where seen_at<now()-interval '60 days'$$);

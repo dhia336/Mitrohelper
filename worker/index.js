@@ -1,0 +1,29 @@
+// Cloudflare Worker: the ONLY thing allowed to write to Supabase. Paste into Workers dashboard > Edit code.
+// Secrets/variables: SUPABASE_URL, SUPABASE_SERVICE_KEY (secret), TURNSTILE_SECRET (secret, optional), CRON_KEY (secret), ALLOWED_ORIGIN (your site URL, comma-separated, e.g. https://mitrohelper.pages.dev)
+const int=x=>Number.isInteger(x)&&x>0&&x<1e12, devOk=d=>typeof d=='string'&&d.length>=16&&d.length<=64;
+export default{async fetch(req,env,ctx){
+ const u=new URL(req.url),p=u.pathname,o=req.headers.get('origin')||'',al=(env.ALLOWED_ORIGIN||'*').split(',').map(s=>s.trim());
+ const cors={'access-control-allow-origin':al.includes('*')?'*':al.includes(o)?o:al[0],'access-control-allow-headers':'content-type','access-control-allow-methods':'GET,POST,OPTIONS',vary:'origin'};
+ const J=(b,s=200,h={})=>new Response(JSON.stringify(b),{status:s,headers:{...cors,'content-type':'application/json',...h}});
+ const hd={apikey:env.SUPABASE_SERVICE_KEY,Authorization:'Bearer '+env.SUPABASE_SERVICE_KEY,'Content-Type':'application/json'};
+ const sb=async(path,body)=>(await fetch(env.SUPABASE_URL+'/rest/v1/'+path,{method:body?'POST':'GET',headers:hd,body:body?JSON.stringify(body):undefined})).json();
+ const liveKey=new Request(u.origin+'/api/live');
+ const cached=async(key,ttl,build)=>{const c=caches.default;let r=await c.match(key);if(r)return r;r=J(await build(),200,{'cache-control':'public, max-age='+ttl});ctx.waitUntil(c.put(key,r.clone()));return r};
+ try{
+  if(req.method=='OPTIONS')return new Response(null,{headers:cors});
+  if(req.method=='GET'&&p=='/api/data')return cached(req,3600,async()=>{const[lines,stations]=await Promise.all([sb('lines?select=*&order=sort'),sb('stations?select=*&order=line_id,pos')]);return{lines,stations}});
+  if(req.method=='GET'&&p=='/api/live')return cached(liveKey,8,async()=>{const[s,i]=await Promise.all([sb('live?select=*'),sb('live_incidents?select=*')]);return{s,i}});
+  if(p=='/api/cron'){if(!env.CRON_KEY||req.headers.get('x-cron-key')!==env.CRON_KEY)return J({r:'denied'},403);return J({r:'ok',purged:await sb('rpc/purge_old',{})})}
+  if(req.method!='POST')return J({r:'bad'},404);
+  if(!al.includes('*')&&o&&!al.includes(o))return J({r:'bad'},403);
+  const b=await req.json().catch(()=>null);if(!b||!devOk(b.dev))return J({r:'bad'},400);
+  const ip=req.headers.get('CF-Connecting-IP')||'?',base={p_dev:b.dev,p_ip:ip};let fn,args,human=false;
+  if(p=='/api/report'&&int(b.station)&&(b.dir=='a'||b.dir=='b')){fn='report';args={...base,p_station:b.station,p_dir:b.dir};human=true}
+  else if(p=='/api/incident'&&int(b.station)){fn='report_incident';args={...base,p_station:b.station};human=true}
+  else if((p=='/api/vote'||p=='/api/ivote')&&int(b.id)&&(b.v==1||b.v==-1)){fn=p=='/api/vote'?'vote':'vote_incident';args={...base,p_id:b.id,p_v:b.v}}
+  else return J({r:'bad'},400);
+  if(human&&env.TURNSTILE_SECRET){const f=new FormData();f.append('secret',env.TURNSTILE_SECRET);f.append('response',b.ts||'');f.append('remoteip',ip);
+   const v=await(await fetch('https://challenges.cloudflare.com/turnstile/v0/siteverify',{method:'POST',body:f})).json();if(!v.success)return J({r:'bot'},403)}
+  const r=await sb('rpc/'+fn,args);if(r==='ok')ctx.waitUntil(caches.default.delete(liveKey));
+  return J({r:typeof r=='string'?r:'err'});
+ }catch(e){return J({r:'err'},500)}}};
