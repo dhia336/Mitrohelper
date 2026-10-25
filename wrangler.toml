@@ -8,5 +8,5 @@ binding = "ASSETS"
 
 [vars]
 SUPABASE_URL = "https://pxbekofgpogrootrnowq.supabase.co"
-ALLOWED_ORIGIN = "https://mitrohelper.medhianaffeti.workers.dev"
+ALLOWED_ORIGIN = "https://mitrohelper.dhia336.workers.dev"
 # Secrets (NOT here): SUPABASE_SERVICE_KEY, CRON_KEY, TURNSTILE_SECRET
