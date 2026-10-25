@@ -1,8 +1,10 @@
-// Cloudflare Worker: the ONLY thing allowed to write to Supabase. Paste into Workers dashboard > Edit code.
-// Secrets/variables: SUPABASE_URL, SUPABASE_SERVICE_KEY (secret), TURNSTILE_SECRET (secret, optional), CRON_KEY (secret), ALLOWED_ORIGIN (your site URL, comma-separated, e.g. https://mitrohelper.pages.dev)
+// ONE Worker = website (web/ via the ASSETS binding) + API (/api/*). The only thing allowed to write to Supabase.
+// Plain vars live in wrangler.toml (SUPABASE_URL, ALLOWED_ORIGIN). Secrets (set once): SUPABASE_SERVICE_KEY, CRON_KEY, TURNSTILE_SECRET (optional).
 const int=x=>Number.isInteger(x)&&x>0&&x<1e12, devOk=d=>typeof d=='string'&&d.length>=16&&d.length<=64;
 export default{async fetch(req,env,ctx){
- const u=new URL(req.url),p=u.pathname,o=req.headers.get('origin')||'',al=(env.ALLOWED_ORIGIN||'*').split(',').map(s=>s.trim());
+ const u=new URL(req.url),p=u.pathname;
+ if(!p.startsWith('/api/'))return env.ASSETS.fetch(req); // everything else = the website files (web/)
+ const o=req.headers.get('origin')||'',al=(env.ALLOWED_ORIGIN||'*').split(',').map(s=>s.trim());
  const cors={'access-control-allow-origin':al.includes('*')?'*':al.includes(o)?o:al[0],'access-control-allow-headers':'content-type','access-control-allow-methods':'GET,POST,OPTIONS',vary:'origin'};
  const J=(b,s=200,h={})=>new Response(JSON.stringify(b),{status:s,headers:{...cors,'content-type':'application/json',...h}});
  const hd={apikey:env.SUPABASE_SERVICE_KEY,Authorization:'Bearer '+env.SUPABASE_SERVICE_KEY,'Content-Type':'application/json'};
