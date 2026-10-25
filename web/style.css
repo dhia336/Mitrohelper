@@ -64,3 +64,5 @@ button:focus-visible{outline:3px solid var(--ye);outline-offset:2px}.mir{display
 .al{margin-top:.8rem;padding:.75rem .85rem;border-radius:.8rem;background:#e5383b1c;border:1.5px solid #e5383b;animation:up .4s var(--ez)}.al .dt{color:#e5383b;font-weight:800}.al .st{font-size:1.05rem}
 .sl li.bad .dot{background:#e5383b;border-color:#e5383b;animation:pc 1.6s infinite;--c:#e5383b}.sl li.bad{font-weight:800}.sl em.w{background:#e5383b}
 .pan[data-m=stop]{border-top:5px solid #e5383b}.tsw{position:fixed;z-index:25;inset-inline:0;bottom:1rem;display:flex;justify-content:center}
+
+.ft{margin:1.2rem .3rem 0;color:var(--mu);font-size:.75rem;line-height:1.5;text-align:center}

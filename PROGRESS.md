@@ -8,6 +8,7 @@
 - v0.6 (UNTESTED): breakdown reports + votes; Cloudflare Worker proxy (cache, Turnstile, secret-key writes, cron purge); `banned` table; poll 20s.
 - DB (Supabase project 'Mitrou', pxbekofgpogrootrnowq): migrate_v2 APPLIED and verified (tables+RLS present, write functions executable by service_role only, 108 stations, 0 sightings). Worker, Turnstile, cron, site deploy: NOT done yet.
 - v0.7: stations replaced by owner's accurate lists (103 stations; names identical in ar/fr/en for now) and APPLIED to Supabase 'Mitrou' (migration v3_accurate_stations, verified counts 11/12/11/20/14/18/17). All lines now ordered city-centre first. Deployment status: site uploaded to Cloudflare worker 'mitrohelper-api'; API worker + config.js still pending.
+- v0.9: disclaimer+privacy footer (ar/fr/en), sw cache mh6. Turnstile: owner enabling.
 - v0.8 (UNTESTED): frontend+API merged into one Worker (wrangler.toml, assets binding). Service worker now bypasses /api/ (otherwise live data would be served stale).
 ## Bugs / lessons
 1. Supabase grants EXECUTE on new functions to `anon` by default, so `revoke ... from public` alone did NOT lock the write functions. v0.6 revokes from anon/authenticated explicitly.
