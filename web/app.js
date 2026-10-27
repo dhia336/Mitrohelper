@@ -3,12 +3,12 @@ const get=(p,o)=>fetch(A+p,o).then(r=>r.json());
 let dev=localStorage.dev||(localStorage.dev=crypto.randomUUID());
 const post=(p,b)=>fetch(A+p,{method:'POST',headers:{'content-type':'application/json'},body:JSON.stringify({...b,dev})}).then(r=>r.json()).then(d=>d.r).catch(()=>'err');
 const T={
-ar:{dis:'المعلومات مقدمة من المستعملين وليست رسمية، وقد تكون غير دقيقة. الموقع غير تابع لشركة نقل تونس. بدون حسابات: نحفظ فقط معرّفا عشوائيا للجهاز.',nm:'المترو',np:'الخريطة',cta:'شفت المترو؟',stp:'المترو واقف',tg:'وين وصل المترو ؟',mh:'كبّر بإصبعين وحرّك الخريطة',no:'اللواج',line:'خط',to:'باتجاه',ago:m=>m<1?'الآن':'منذ '+m+' د',none:'لا توجد إشارة منذ 45 دقيقة',n45:'إشارة في آخر 45 دقيقة',l1:'أي خط؟',l2:'في أي محطة؟',l2s:'وين واقف؟',l3:'لأي اتجاه يمشي؟',ok:'شكرا ',slow:'انتظر شوية قبل إشارة أخرى',err:'مشكل، أعد المحاولة',dup:'أجبت من قبل',hw:'متوقف',still:'مازال واقف',run:'رجع يخدم',conf:'تأكيد',lc:'آخر تأكيد',
- cs:'اللواج قريبا',csd:'نحضّرو لتتبع محطات اللواج مباشرة. ترقّبوا!',soon:'قريبا',inst:'📲 ثبّت التطبيق',ios:'آيفون: مشاركة ثم «إضافة إلى الشاشة الرئيسية»'},
-fr:{dis:'Informations signalées par les usagers, non officielles et parfois inexactes. Ce site n’est pas affilié à Transtu. Sans compte : seul un identifiant aléatoire d’appareil est conservé.',nm:'Métro',np:'Plan',cta:'J’ai vu le métro',stp:'Métro en panne',tg:'Où est le métro en ce moment ?',mh:'Zoomez à deux doigts, faites glisser',no:'Louage',line:'Ligne',to:'vers',ago:m=>m<1?'à l’instant':'il y a '+m+' min',none:'Aucun signalement depuis 45 min',n45:'signalements (45 min)',l1:'Quelle ligne ?',l2:'Quelle station ?',l2s:'Où est-il arrêté ?',l3:'Quel sens ?',ok:'Merci ! Tout le monde le voit',slow:'Patientez un peu',err:'Problème, réessayez',dup:'Déjà voté',hw:'Arrêté',still:'Toujours en panne',run:'Ça roule',conf:'confirmations',lc:'dernière confirmation',
- cs:'Louage bientôt',csd:'Nous préparons le suivi en direct des stations de louage. Restez connectés !',soon:'BIENTÔT',inst:'📲 Installer l’app',ios:'iPhone : Partager puis « Sur l’écran d’accueil »'},
-en:{dis:'Community-reported information: not official and may be inaccurate. This site is not affiliated with Transtu. No accounts: only a random device ID is stored.',nm:'Metro',np:'Map',cta:'I saw the metro',stp:'Metro stopped',tg:'Where is the metro right now?',mh:'Pinch to zoom, drag to move',no:'Louage',line:'Line',to:'toward',ago:m=>m<1?'just now':m+' min ago',none:'No report in the last 45 min',n45:'reports (last 45 min)',l1:'Which line?',l2:'Which station?',l2s:'Where is it stopped?',l3:'Which direction?',ok:'Thanks! Everyone can see it',slow:'Please wait a bit',err:'Problem, try again',dup:'Already voted',hw:'Stopped',still:'Still stopped',run:'Running again',conf:'confirmations',lc:'last confirmed',
- cs:'Louage coming soon',csd:'We’re building live tracking for louage stations. Stay tuned!',soon:'COMING SOON',inst:'📲 Install app',ios:'iPhone: Share, then “Add to Home Screen”'}};
+ar:{dis:'المعلومات مقدمة من المستعملين وليست رسمية، وقد تكون غير دقيقة. الموقع غير تابع لشركة نقل تونس. بدون حسابات: نحفظ فقط معرّفا عشوائيا للجهاز.',nm:'المترو',np:'الخريطة',cta:'شفت المترو؟',stp:'المترو واقف',tg:'وين وصل المترو ؟',mh:'كبّر بإصبعين وحرّك الخريطة',line:'خط',to:'باتجاه',ago:m=>m<1?'الآن':'منذ '+m+' د',none:'لا توجد إشارة منذ 45 دقيقة',n45:'إشارة في آخر 45 دقيقة',l1:'أي خط؟',l2:'في أي محطة؟',l2s:'وين واقف؟',l3:'لأي اتجاه يمشي؟',ok:'شكرا ',slow:'انتظر شوية قبل إشارة أخرى',err:'مشكل، أعد المحاولة',dup:'أجبت من قبل',hw:'متوقف',still:'مازال واقف',run:'رجع يخدم',conf:'تأكيد',lc:'آخر تأكيد',
+ inst:'📲 ثبّت التطبيق',ios:'آيفون: مشاركة ثم «إضافة إلى الشاشة الرئيسية»'},
+fr:{dis:'Informations signalées par les usagers, non officielles et parfois inexactes. Ce site n’est pas affilié à Transtu. Sans compte : seul un identifiant aléatoire d’appareil est conservé.',nm:'Métro',np:'Plan',cta:'J’ai vu le métro',stp:'Métro en panne',tg:'Où est le métro en ce moment ?',mh:'Zoomez à deux doigts, faites glisser',line:'Ligne',to:'vers',ago:m=>m<1?'à l’instant':'il y a '+m+' min',none:'Aucun signalement depuis 45 min',n45:'signalements (45 min)',l1:'Quelle ligne ?',l2:'Quelle station ?',l2s:'Où est-il arrêté ?',l3:'Quel sens ?',ok:'Merci ! Tout le monde le voit',slow:'Patientez un peu',err:'Problème, réessayez',dup:'Déjà voté',hw:'Arrêté',still:'Toujours en panne',run:'Ça roule',conf:'confirmations',lc:'dernière confirmation',
+ inst:'📲 Installer l’app',ios:'iPhone : Partager puis « Sur l’écran d’accueil »'},
+en:{dis:'Community-reported information: not official and may be inaccurate. This site is not affiliated with Transtu. No accounts: only a random device ID is stored.',nm:'Metro',np:'Map',cta:'I saw the metro',stp:'Metro stopped',tg:'Where is the metro right now?',mh:'Pinch to zoom, drag to move',line:'Line',to:'toward',ago:m=>m<1?'just now':m+' min ago',none:'No report in the last 45 min',n45:'reports (last 45 min)',l1:'Which line?',l2:'Which station?',l2s:'Where is it stopped?',l3:'Which direction?',ok:'Thanks! Everyone can see it',slow:'Please wait a bit',err:'Problem, try again',dup:'Already voted',hw:'Stopped',still:'Still stopped',run:'Running again',conf:'confirmations',lc:'last confirmed',
+ inst:'📲 Install app',ios:'iPhone: Share, then “Add to Home Screen”'}};
 const $=s=>document.querySelector(s),buzz=()=>navigator.vibrate&&navigator.vibrate(8);
 let lang=localStorage.lang||'ar',lines=[],sts=[],lv=[],li=[],tab='metro',seen=0,S={},tok='',tid,tokP,tokR;
 const t=k=>T[lang][k],nm=s=>s[lang]||s.fr;
@@ -18,6 +18,8 @@ const ends=l=>{const x=byLine(l);return{a:x[x.length-1],b:x[0]}};
 const mins=d=>Math.max(0,Math.floor((Date.now()-new Date(d))/6e4));
 const hh=()=>document.documentElement.style.setProperty('--hh',document.querySelector('header').offsetHeight+'px');
 addEventListener('resize',hh);
+let lz; // Lenis smooth scroll: only for mouse/trackpad devices, not reduced-motion; touch keeps native momentum (nothing to download on phones)
+if(matchMedia('(any-pointer:fine)').matches&&!matchMedia('(prefers-reduced-motion:reduce)').matches){const sc=document.createElement('script');sc.src='https://cdn.jsdelivr.net/npm/lenis@1.3.11/dist/lenis.min.js';sc.onload=()=>{lz=new Lenis({autoRaf:true,allowNestedScroll:true})};document.head.appendChild(sc)}
 // latest sighting(s) per line+direction. MAXT=1: only the newest (a second report replaces the first). Set 2-3 to list several trains; same station within 4 min is always collapsed.
 const MAXT=1,trains=(lid,d)=>{const k=[];lv.filter(s=>s.line_id==lid&&s.dir==d).sort((p,q)=>new Date(q.seen_at)-new Date(p.seen_at)).forEach(s=>{if(k.length<MAXT&&!k.some(z=>z.station_id==s.station_id&&new Date(z.seen_at)-new Date(s.seen_at)<24e4))k.push(s)});return k};
 const arr=d=>d=='a'?'↓':'↑',stn=id=>nm(sts.find(s=>s.id==id));
@@ -27,12 +29,11 @@ function ts(){if(!C.TS)return;tok='';tokP=new Promise(r=>tokR=r);const go=()=>{t
 async function send(p,b){for(let i=0;i<2;i++){if(C.TS&&!tok)await Promise.race([tokP,new Promise(r=>setTimeout(r,12000))]);const r=await post(p,{...b,ts:tok});ts();if(r!='bot')return r}return'bot'} // waits for the CAPTCHA token, retries once
 function setLang(l){lang=localStorage.lang=l;document.documentElement.lang=l;document.documentElement.dir=l=='ar'?'rtl':'ltr';
  document.querySelectorAll('[data-g]').forEach(b=>b.classList.toggle('on',b.dataset.g==l));
- $('#nM').textContent=t('nm');$('#nP').textContent=t('np');$('#cT').textContent=t('cta');$('#cS').textContent=t('stp');$('#nO').textContent=t('no');document.title='MitroHelper';seen=0;render();sheet()}
+ $('#nM').textContent=t('nm');$('#nP').textContent=t('np');$('#cT').textContent=t('cta');$('#cS').textContent=t('stp');document.title='MitroHelper';seen=0;render();sheet()}
 function render(){
  document.querySelectorAll('nav [data-t]').forEach(b=>b.classList.toggle('on',b.dataset.t==tab));
  const v=$('#v');v.classList.toggle('noani',!!seen);document.body.dataset.tab=tab;hh();
- if(tab=='map'){seen=0;v.innerHTML=`<div class="mp"><p class="mu">${t('mh')}</p><div class="mz"><img src="img/map.webp" alt="" decoding="async"></div></div>`;return}
- if(tab=='louage'){seen=0;v.innerHTML=`<div class="cs"><div class="rd"><div class="van"><svg viewBox="0 0 64 36"><path d="M3 26V13a3 3 0 013-3h30l14 10h8v6M3 26h6m10 0h24M16 10v8h14"/><circle cx="14" cy="28" r="4"/><circle cx="48" cy="28" r="4"/></svg></div></div><span class="tag">${t('soon')}</span><h2>${t('cs')}</h2><p>${t('csd')}</p></div>`;return}
+ if(tab=='map'){seen=0;v.innerHTML=`<div class="mp"><p class="mu">${t('mh')}</p><div class="mz" data-lenis-prevent><img src="img/map.webp" alt="" decoding="async"></div></div>`;return}
  if(!lines.length){v.innerHTML='<div class="sk"></div>'.repeat(4);return}
  v.innerHTML=`<div class="hero"><img src="img/hero.webp" alt="" fetchpriority="high"><div class="hc"><span class="chip"><i class="pd"></i>${lv.length} ${t('n45')}</span>${li.length?`<span class="chip warn">⚠ ${li.length} ${t('hw')}</span>`:''}<h2>${t('tg')}</h2></div></div>`+`<div class="jb">${lines.map(l=>`<button class="lj" data-j="${l.id}" aria-label="${LN(l.id)}" style="--c:${l.color}"><span class="b${bc(l.id)}">${l.id}</span>${li.some(x=>x.line_id==l.id)?'<i class="wd"></i>':''}</button>`).join('')}</div>`+lines.map((l,i)=>{
   const e=ends(l.id),ss=byLine(l.id);
@@ -57,7 +58,7 @@ document.addEventListener('click',async e=>{const g=s=>e.target.closest(s);let b
  else if(b=g('[data-g]'))setLang(b.dataset.g);
  else if(g('.scrim')){S={};sheet()}
  else if(b=g('[data-ln]')){buzz();S.l=b.dataset.ln;S.step=2;sheet()}
- else if(b=g('[data-j]')){buzz();const c=document.getElementById('l'+b.dataset.j);if(c)c.scrollIntoView({behavior:'smooth',block:'start'})}
+ else if(b=g('[data-j]')){buzz();const c=document.getElementById('l'+b.dataset.j);if(c){if(lz)lz.scrollTo(c,{offset:-(document.querySelector('header').offsetHeight+document.querySelector('.jb').offsetHeight+8)});else c.scrollIntoView({behavior:'smooth',block:'start'})}}
  else if(b=g('[data-s]')){buzz();S.s=+b.dataset.s;if(S.mode=='stop')finish(await send('/incident',{station:S.s}));else{S.step=3;sheet()}}
  else if(g('[data-bk]')){S.step--;sheet()}
  else if(b=g('[data-d]')){buzz();finish(await send('/report',{station:S.s,dir:b.dataset.d}))}});

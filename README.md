@@ -14,6 +14,9 @@ Directions: `a` = toward highest `pos` station, `b` = toward lowest. Add station
 ## UI: line cards always expanded
 Line cards are always fully expanded (header, direction rows, full station track) with no collapse control. A sticky line-jump bar (`.jb`, one coloured badge per line, red dot if that line has a live stop alert) sits under the header; tapping a badge smooth-scrolls to `#l<id>` (`data-j` handler in app.js; `--hh` = header height set by `hh()`). v0.11 removed the `data-tog` handler, chevron, `open` Set and `.tk` collapse CSS.
 
+## Tabs and scrolling (v0.12)
+Tabs: Metro and Map only (Louage 'coming soon' tab removed: nav button, view branch, `cs/csd/soon/no` strings, `.cs/.rd/.van` CSS; nav grid is 2 columns). Smooth scroll: Lenis 1.3.11 loaded from jsDelivr by app.js ONLY when `(any-pointer:fine)` and not `prefers-reduced-motion` (touch devices keep native scrolling and download nothing); falls back to native scroll if the script is blocked. `data-lenis-prevent` on the report sheet (`#pan`) and map (`.mz`); jump-bar uses `lz.scrollTo` with a header+bar offset. To self-host: save the file as `web/lenis.min.js` and change the `sc.src` in app.js.
+
 ## v0.11: stop reports ('Metro stopped')
 Rules live ONLY in the `live_incidents` view (`supabase/migrate_v5.sql`): an alert is live while (a) a 'still stopped' confirmation arrived in the last 15 min (`last_at`; each distinct device's confirmation extends it, 'running again' votes do not), (b) running-again votes < stopped votes, (c) nobody reported a metro AT THAT STATION more than 2 min after the last confirmation (a train seen there = moving again). One alert per station; a new report on a live alert is a confirmation, on a dead one it starts a fresh alert with fresh counts. UI shows 'Still stopped · N' / 'Running again · M' on the buttons and 'last confirmed X ago'. Existing DB: run `migrate_v5.sql`. Change the 15 min / 2 min numbers in the view only.
 

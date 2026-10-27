@@ -30,7 +30,7 @@ main{max-width:34rem;margin:auto;padding:0 1rem calc(9rem + env(safe-area-inset-
 .sl em{font-style:normal;font-size:.72rem;padding:.1rem .55rem;border-radius:2rem;background:var(--c);color:#fff}
 .sk{height:9rem;border-radius:1rem;margin-bottom:.8rem;background:linear-gradient(100deg,var(--ln) 30%,var(--cd) 50%,var(--ln) 70%) 0 0/300% 100%;animation:sh 1.3s infinite}@keyframes sh{to{background-position:-300% 0}}
 .mp{padding-top:1rem}.mp p{margin:0 0 .6rem;font-size:.85rem}.mz{height:calc(100dvh - 15rem);overflow:auto;border-radius:1rem;border:1px solid var(--ln);background:#f2dd9c;touch-action:pan-x pan-y pinch-zoom}.mz img{display:block;width:260%;max-width:none;height:auto}
-nav{position:fixed;z-index:6;inset-inline:0;bottom:0;display:grid;grid-template-columns:repeat(3,1fr);padding:.35rem .5rem calc(.35rem + env(safe-area-inset-bottom));background:var(--cd);border-top:1px solid var(--ln)}
+nav{position:fixed;z-index:6;inset-inline:0;bottom:0;display:grid;grid-template-columns:repeat(2,1fr);padding:.35rem .5rem calc(.35rem + env(safe-area-inset-bottom));background:var(--cd);border-top:1px solid var(--ln)}
 nav button{position:relative;display:flex;flex-direction:column;align-items:center;gap:.1rem;border:0;background:none;color:var(--mu);font-size:.72rem;font-weight:800;padding:.4rem;transition:color .2s}nav button.on{color:var(--gr)}
 nav button.on::before{content:"";position:absolute;top:-.35rem;width:2rem;height:3px;border-radius:3px;background:var(--gr);animation:up .3s}
 .ctas{position:fixed;z-index:6;inset-inline:1rem;bottom:calc(4.5rem + env(safe-area-inset-bottom));max-width:32rem;margin:auto;display:flex;gap:.5rem}.cta{position:relative;flex:1.5;display:flex;align-items:center;justify-content:center;gap:.5rem;padding:.9rem .5rem;border:0;border-radius:1rem;background:var(--ye);color:#1a1400;font-weight:900;font-size:1rem;overflow:hidden;box-shadow:0 8px 22px #0003;transition:transform .15s}.cta.bad{flex:1;background:#e5383b;color:#fff;font-size:.9rem}.cta.bad::after{display:none}.cta svg{flex:none}.cta:active{transform:scale(.97)}
@@ -48,11 +48,6 @@ body:not([data-tab=metro]) .ctas{display:none}
 .pk{display:block;width:100%;margin-bottom:.5rem;padding:.85rem 1rem;text-align:start;font-weight:700;border-inline-start:6px solid var(--c)}
 .dir{display:flex;align-items:center;gap:1rem;width:100%;margin-bottom:.7rem;padding:1.1rem;text-align:start;font-weight:900;font-size:1.05rem}.dir svg{width:2.2rem;height:2.2rem;color:var(--gr)}
 .ok{display:grid;place-items:center;gap:.8rem;padding:2rem 0;text-align:center;font-weight:900}.ok svg{width:6rem;height:6rem;stroke:var(--gr);stroke-width:2.4;stroke-dasharray:160;stroke-dashoffset:160;animation:dr .8s .15s var(--ez) forwards}@keyframes dr{to{stroke-dashoffset:0}}
-.cs{display:grid;justify-items:center;text-align:center;gap:1rem;padding:2.5rem 0;animation:up .6s var(--ez)}.cs h2{margin:0;font-size:1.8rem;font-weight:900}.cs p{margin:0;max-width:22rem;color:var(--mu)}
-.rd{position:relative;width:100%;height:7rem;overflow:hidden;border-radius:1rem;background:var(--cd);border:1px solid var(--ln)}
-.rd::after{content:"";position:absolute;inset-inline:0;bottom:1.6rem;height:3px;background:repeating-linear-gradient(90deg,var(--mu) 0 14px,#0000 14px 28px);animation:rr 1s linear infinite}@keyframes rr{to{background-position:-28px 0}}
-.van{position:absolute;bottom:1.9rem;width:5.5rem;left:-6rem;color:var(--gr);animation:dv 5s linear infinite}.van svg{width:100%;height:auto;stroke-width:1.5}@keyframes dv{to{left:105%}}
-.van circle{transform-box:fill-box;transform-origin:center;animation:sp .5s linear infinite}@keyframes sp{to{transform:rotate(360deg)}}
 .tag{padding:.3rem .9rem;border-radius:.5rem;background:var(--ye);color:#1a1400;font-weight:900;font-size:.8rem;letter-spacing:.06em}
 #inst{max-width:34rem;margin:.6rem auto 0;padding:0 1rem}#inst button{padding:.5rem 1rem;border-radius:.7rem;border:2px solid var(--gr);background:none;color:var(--gr);font-weight:800}#inst p{margin:0;color:var(--mu);font-size:.8rem}
 #toast{position:fixed;z-index:30;inset-inline:1rem;top:calc(1rem + env(safe-area-inset-top));max-width:28rem;margin:auto;padding:.9rem 1rem;border-radius:.9rem;background:var(--ink);color:var(--bg);text-align:center;font-weight:800;transform:translateY(-200%);transition:transform .45s var(--ez)}#toast.s{transform:none}
@@ -74,3 +69,9 @@ button:focus-visible{outline:3px solid var(--ye);outline-offset:2px}.mir{display
 .lj .b.t{font-size:.62rem}
 .wd{position:absolute;top:-.1rem;inset-inline-end:-.1rem;width:.7rem;height:.7rem;border-radius:50%;background:#e5383b;border:2px solid var(--bg)}
 .card{scroll-margin-top:calc(var(--hh,3.5rem) + 3.8rem)}
+
+/* Lenis recommended rules */
+html.lenis,html.lenis body{height:auto}
+.lenis.lenis-smooth{scroll-behavior:auto!important}
+.lenis.lenis-smooth [data-lenis-prevent]{overscroll-behavior:contain}
+.lenis.lenis-stopped{overflow:clip}

@@ -1,5 +1,6 @@
 # PROGRESS
 ## Status (all untested: nothing run against a real Supabase project or real phones)
+- v0.12 (UNTESTED, JS syntax-checked only): Lenis smooth scroll (decision 10), Louage tab removed (decision 11), sw cache mh12. No SQL changes.
 - v0.11 (UNTESTED, SQL not run anywhere, JS syntax-checked only): stop reports reworked (bug 4). Run `supabase/migrate_v5.sql`, redeploy, sw cache mh10. Cards now always expanded and not collapsible (decision 8). Sticky line-jump bar added (decision 9), stop lifetime now 15 min, sw cache mh11.
 - v0.10 (UNTESTED, only syntax-checked): `MAXT` switch for direction cards, default 1 = latest sighting only as before (owner prefers this; bug 3 notes why multi-train was considered), live endpoint cut to 1 Supabase query + 20s edge cache, client skips redundant re-renders, rate-limit indexes. Run `supabase/migrate_v4.sql`, redeploy Worker, sw cache now mh8.
 - v0.1 written: UI, i18n, PWA, schema, anti-spam.
@@ -28,6 +29,8 @@
 7b. Sighting-clears-stop rule is same-station only: a train ahead of the blockage reported elsewhere proves nothing. Risk: someone reporting the stuck train at that station as a sighting >2 min after the last confirmation clears the alert wrongly (they can re-confirm to revive it as a fresh alert).
 8. Line cards are permanently expanded (owner request): station track always visible, so the page is long (7 lines). If scrolling becomes a problem, consider a sticky line-jump bar rather than bringing collapse back.
 9. Navigation for always-expanded cards = sticky badge bar under the header (not collapse). Red dot on a badge = live stop alert on that line. No scroll-spy/active highlight (extra compute, not needed).
+10. Lenis is desktop/mouse only by design: on touch devices it adds nothing (it does not smooth touch) and would cost a rAF loop + a download. Loaded from jsDelivr, pinned 1.3.11 (no SRI hash: file not available offline when this was written; not in the service-worker cache, so offline = native scroll).
+11. Louage tab removed at owner request. Re-adding means a new nav button + view branch + i18n strings (see git history before v0.12).
 ## Known limitations / TODO
 8. FIXED in v0.11 (see bug 4). Was: breakdown lifetime 90 min counted from the FIRST report; later confirmations add +1 but do NOT extend it, so a long outage vanishes 90 min after the first report even if people keep confirming. Hidden earlier when 'running again' votes exceed confirmations by 2 (one reporter alone needs 3 such votes). Idea: refresh seen_at on confirmation.
 7. (Only if MAXT>1.) Same train reported at two different stations shows as two trains (see decision 5). Fix would need a 'same train' tap or timing model.
