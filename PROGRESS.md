@@ -1,5 +1,7 @@
 # PROGRESS
 ## Status (all untested: nothing run against a real Supabase project or real phones)
+- v0.11 (UNTESTED, SQL not run anywhere, JS syntax-checked only): stop reports reworked (bug 4). Run `supabase/migrate_v5.sql`, redeploy, sw cache mh10. Cards now always expanded and not collapsible (decision 8). Sticky line-jump bar added (decision 9), stop lifetime now 15 min, sw cache mh11.
+- v0.10 (UNTESTED, only syntax-checked): `MAXT` switch for direction cards, default 1 = latest sighting only as before (owner prefers this; bug 3 notes why multi-train was considered), live endpoint cut to 1 Supabase query + 20s edge cache, client skips redundant re-renders, rate-limit indexes. Run `supabase/migrate_v4.sql`, redeploy Worker, sw cache now mh8.
 - v0.1 written: UI, i18n, PWA, schema, anti-spam.
 - v0.2: full line 4 station list. Existing DBs: run `supabase/update_line4.sql`.
 - v0.3: stations for all lines from map. Existing DBs: run `supabase/update_stations.sql`.
@@ -14,11 +16,21 @@
 ## Bugs / lessons
 1. Supabase grants EXECUTE on new functions to `anon` by default, so `revoke ... from public` alone did NOT lock the write functions. v0.6 revokes from anon/authenticated explicitly.
 2. Per-IP 2-minute limit would block different people sharing one mobile-carrier IP (CGNAT). Replaced with generous hourly caps; per-device limits unchanged.
+3. Direction card shows only the newest sighting per direction, so a second train reported later replaces the first. Owner CHOSE to keep this (prefers the latest sight over risking the same train listed twice). v0.10 adds `MAXT` in app.js (1 = current behaviour; 2-3 lists several trains). Not a bug by decision.
+4. Stop alerts lingered 90 min after the first report and were hidden only if 'running again' beat confirmations by 2. Owner's scenario: stopped 15 min, many confirm, then it runs again but few people bother to say so (people mostly report sightings) -> false alert for up to 90 min. Fixed in v0.11: 15 min lifetime from the LAST confirmation, hidden when running-again >= stopped, auto-resolved by a sighting at the same station (+2 min grace), UI shows both counts.
 ## Decisions
 1. Polling every 15s instead of Supabase Realtime: zero dependencies, fast load, enough for this use.
 2. No framework/build: vanilla JS, ~10 KB, fastest load.
 3. Writes only through RPC functions so RLS can stay closed.
+4. Edge cache TTL (20s) equals poll interval: before (8s TTL vs 20s poll) nearly every poll was a cache miss -> Supabase. Now Supabase load is bounded per Cloudflare datacenter, independent of user count. Cache API has no stale-while-revalidate, so none is used.
+5. (Only matters if MAXT>1.) Merge only same-station reports within 4 min (headways are longer, so two trains that close at one station is unlikely). Do NOT merge across stations: a train seen at stations 3 then 7 is indistinguishable from two trains, and wrongly merging would hide a real one.
+6. Stop lifetime is activity-based (15 min since last 'still stopped'), not a fixed 90 min: an outage stays up only while distinct people keep confirming. Absence of sightings is NOT treated as a stop (quiet hours / few users would look like an outage); sightings only ever clear a stop.
+7b. Sighting-clears-stop rule is same-station only: a train ahead of the blockage reported elsewhere proves nothing. Risk: someone reporting the stuck train at that station as a sighting >2 min after the last confirmation clears the alert wrongly (they can re-confirm to revive it as a fresh alert).
+8. Line cards are permanently expanded (owner request): station track always visible, so the page is long (7 lines). If scrolling becomes a problem, consider a sticky line-jump bar rather than bringing collapse back.
+9. Navigation for always-expanded cards = sticky badge bar under the header (not collapse). Red dot on a badge = live stop alert on that line. No scroll-spy/active highlight (extra compute, not needed).
 ## Known limitations / TODO
+8. FIXED in v0.11 (see bug 4). Was: breakdown lifetime 90 min counted from the FIRST report; later confirmations add +1 but do NOT extend it, so a long outage vanishes 90 min after the first report even if people keep confirming. Hidden earlier when 'running again' votes exceed confirmations by 2 (one reporter alone needs 3 such votes). Idea: refresh seen_at on confirmation.
+7. (Only if MAXT>1.) Same train reported at two different stations shows as two trains (see decision 5). Fix would need a 'same train' tap or timing model.
 1. Stations: owner-supplied list (v0.5). Differences vs the Transtu map to confirm: line 6 lacks Mourouj 2 and uses 'Cité Ennasr' where the map shows Cité Municipale; line 5 lacks Ettadhamen; 'Cité Sportive' (list) vs 'Cité Olympique' (map) on line 2; 'Habib Thameur' not on the map. OLD NOTE (superseded): Unverified by a rider: (a) lines 3 and 5 are assumed to share the trunk Barcelone..Les Jasmins; (b) line 1 starts at Tunis Marine, line 6 at Barcelone; (c) line 2 starts at La République.
 2. All Arabic station names are my best effort: unreviewed.
 3. Arabic/French wording is mine; have a native reader review it.
