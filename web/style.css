@@ -70,3 +70,19 @@ html.lenis,html.lenis body{height:auto}
 .lenis.lenis-smooth{scroll-behavior:auto!important}
 .lenis.lenis-smooth [data-lenis-prevent]{overscroll-behavior:contain}
 .lenis.lenis-stopped{overflow:clip}
+
+.tn.old{opacity:.5}
+.tn.old .pd{display:none}
+
+.lst{display:flex;align-items:center;gap:.8rem;width:100%;margin-bottom:.8rem;padding:.8rem 1rem;text-align:start;border:1.5px dashed var(--c,var(--gr));border-radius:1rem;background:var(--cd)}
+.lst small{display:block;color:var(--mu);font-size:.72rem;font-weight:700}
+.lst b{display:block;font-weight:900}
+.last{box-shadow:inset 0 0 0 2px var(--c,var(--gr))}
+.upd{display:flex;align-items:center;margin:0 .3rem .6rem;font-size:.76rem;font-weight:600;color:var(--mu)}
+.upd.bad{color:#d33}
+.jb.off{border-bottom:2px solid #e5383b}
+.hq{flex:none;width:2rem;height:2rem;border-radius:50%;border:1.5px solid #fff6;background:none;color:#fff;font-weight:900}
+.how ul{list-style:none;margin:0 0 1rem;padding:0;display:grid;gap:.9rem}
+.how li{display:flex;gap:.8rem;line-height:1.5}
+.how li span{flex:none;font-size:1.3rem}
+.hx{width:100%;padding:.9rem;border:0;border-radius:1rem;background:var(--gr);color:var(--on);font-weight:900}
