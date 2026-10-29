@@ -86,3 +86,8 @@ html.lenis,html.lenis body{height:auto}
 .how li{display:flex;gap:.8rem;line-height:1.5}
 .how li span{flex:none;font-size:1.3rem}
 .hx{width:100%;padding:.9rem;border:0;border-radius:1rem;background:var(--gr);color:var(--on);font-weight:900}
+
+.shr{display:flex;align-items:center;justify-content:center;gap:.5rem;margin:1rem auto 0;padding:.6rem 1.1rem;border:1.5px solid var(--ln);border-radius:2rem;background:var(--cd);font-weight:800;font-size:.85rem}
+.shr svg{width:1.1rem;height:1.1rem}
+.how .shr{width:100%;margin:0 0 .7rem}
+.sl em.old{opacity:.5}

@@ -10,3 +10,16 @@ binding = "ASSETS"
 SUPABASE_URL = "https://pxbekofgpogrootrnowq.supabase.co"
 ALLOWED_ORIGIN = "https://mitrohelper.dhia336.workers.dev"
 # Secrets (NOT here): SUPABASE_SERVICE_KEY, CRON_KEY, TURNSTILE_SECRET
+
+# ---- TEST COPY (see README 'Testing before deploying') ----
+# npx wrangler dev --env staging      -> runs on http://localhost:8787 against the TEST Supabase project
+# npx wrangler deploy --env staging   -> online test copy at https://mitrohelper-staging.<your-subdomain>.workers.dev
+# vars and secrets are NOT inherited by environments, so they are repeated here.
+[env.staging]
+name = "mitrohelper-staging"
+
+[env.staging.vars]
+SUPABASE_URL = "https://ppnoeizrpbyzlflbushz.supabase.co"
+ALLOWED_ORIGIN = "https://mitrohelper-staging.dhia336.workers.dev,http://localhost:8787"
+# Staging secrets: npx wrangler secret put SUPABASE_SERVICE_KEY --env staging   (TEST project key)
+#                   npx wrangler secret put TURNSTILE_SECRET --env staging      (value: 1x0000000000000000000000000000000AA)

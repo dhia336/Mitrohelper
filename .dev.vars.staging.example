@@ -1,0 +1,7 @@
+# Copy to .dev.vars.staging (that file is gitignored) for `npx wrangler dev --env staging`.
+# When this file exists, ONLY it is loaded (not .dev.vars), so list every secret here.
+SUPABASE_SERVICE_KEY=paste-the-TEST-project-service_role-key
+TURNSTILE_SECRET=1x0000000000000000000000000000000AA
+CRON_KEY=any-test-string
+# optional override of wrangler.toml vars while running locally:
+ALLOWED_ORIGIN=http://localhost:8787
