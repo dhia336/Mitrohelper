@@ -45,6 +45,7 @@
 19. Owner clarified 'last 3 sights': the card top shows only the newest sighting of each direction; the 3-sighting view is the expanded station list (3 newest of the line, one per station+direction). Supersedes decision 13 (2 slots).
 20. Auto-pause chosen over auto-ban: computed on the fly from existing data (no cron, no table), temporary by design (rolling 24 h / 7 d window), device-based only. Not IP-based (carriers share IPs), not stop-alert-based (false positives). Weakness: two accomplices could downvote a victim's sightings to pause them; and a troll nobody downvotes is not caught (Turnstile + rate limits remain the defence).
 21. Testing = same code, second Supabase project, Wrangler `[env.staging]`; Turnstile dummy keys picked by hostname in config.js (default = production key).
+22. Share button moved from the page bottom (nobody scrolled there) to the hero corner, and also offered on the report 'thanks' screen (highest-intent moment; that screen now stays 3.5 s instead of 1.7 s). Not put in the header: it is already full on 360px phones.
 ## Known limitations / TODO
 10. migrate_v7.sql was never executed (no Postgres in the build sandbox): run it on the STAGING project first.
 9. Two slots can show one train reported at two different stations (same limitation as 7). A sighting older than 30 days disappears from the board (view floor) and everything older than 90 days is purged. Displayed ages beyond a few hours are only meaningful as 'last known'.
