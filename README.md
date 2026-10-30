@@ -2,14 +2,21 @@
 Crowd-sourced live sightings for Tunis light metro (lines 1-6). 3 taps to report; live board per line/direction; ar/fr/en; installable PWA. Free stack, no build step.
 
 ## Layout
-- `web/index.html` shell · `web/style.css` mobile-first styles · `web/app.js` UI, i18n, polling (20s), voting · `web/config.js` Supabase URL+anon key
+- `web/fx.js` theme toggle + tap animations (ripple, vote bursts, confetti, jump flash) · `web/icons/logo.svg` the ONE logo (header `<img>`, tab favicon; `192.png`/`512.png` are renders of it) · `web/index.html` shell · `web/style.css` mobile-first styles · `web/app.js` UI, i18n, polling (20s), voting · `web/config.js` Supabase URL+anon key
 - `supabase/update_stations.sql`/`update_colors.sql` migrations for existing DBs · `web/sw.js` offline shell cache · `web/manifest.webmanifest` + `web/icons/` install-as-app
 - `supabase/migrate_v5.sql` stop-report rules · `supabase/migrate_v4.sql` live_all() + rate-limit indexes · `supabase/schema.sql` tables, RLS, `report()`/`vote()` functions, seed data
 
 ## Architecture
 Static site (Cloudflare Pages/GitHub Pages) -> Supabase REST. Anon can only SELECT `lines`, `stations`, `live` (view hides device/IP). Writes ONLY via `report()` and `vote()` (security definer).
-Anti-spam: 1 report/2 min per device AND per IP hash, max 30/h per IP, one vote per device per sighting, sighting hidden when downvotes exceed upvotes by 2, never expires (shown dimmed after 90 min, see v0.14).
+Anti-spam: 1 report/2 min per device AND per IP hash, max 30/h per IP, one vote per device per sighting, sighting hidden when downvotes exceed upvotes by 2, never expires (shown dimmed after 45 min, see v0.21).
 Directions: `a` = toward highest `pos` station, `b` = toward lowest. Add stations by inserting rows with `pos` between neighbours.
+
+## v0.21: theme toggle, one logo, 45-min timer, animations
+- **Theme**: `<html data-theme="light|dark">`, set by an inline script in `index.html` BEFORE first paint: stored choice (`localStorage.theme`) else the system setting. The header moon/sun button (`.tg`, `fx.js`) flips it and stores the choice; with no stored choice the page follows live changes of the system setting. CSS: dark variables live under `:root[data-theme=dark]` (+ a `prefers-color-scheme` fallback on `:root:not([data-theme])`). Switching uses a circular reveal from the button (View Transitions API; instant where unsupported or with reduced motion). There is no way back to 'follow system' from the UI (clear `theme` in site data).
+- **Logo**: `web/icons/logo.svg` (yellow rounded square, green tram) is used by the header (`<img class="lg">`) and the tab (`<link rel=icon>` svg + 192 png). `icons/192.png`/`512.png` (home-screen/maskable) are full-bleed renders of the same logo. To change the logo, edit `logo.svg` and re-render the two PNGs.
+- **45 minutes** (`ST=45` in app.js; SQL `supabase/migrate_v10.sql`: `live` view + `live_all().n`). Freshness colours: green < 15 min, amber < 30, orange < 45, then dimmed/dashed 'last known' (`fz()`). Wording in `hwi` and `n45` (3 languages) updated. Sightings 45-90 min old are now dimmed immediately, unless they are among the last 3 of the line (the floor). Stop alerts stay 15 min.
+- **Animations** (`fx.js`, all skipped with `prefers-reduced-motion`): ripple on buttons, 👍/👎 burst on votes, card flash + badge bounce when using the jump bar, upload-icon fly + confetti when sharing succeeds (native share finished or link copied), confetti on the report 'thanks' screen. Particles live in `#fx` (fixed overlay, `pointer-events:none`, Web Animations API, nothing runs when idle). `window.fx.confetti(x,y)` / `fx.pop(x,y,emoji)` are called from app.js (`share()`, `finish()`).
+- **v0.22: all line numbers dark** (`fg()` returns `#10241a`; old black/white rule kept as `fgOld`). Looping CTA pulse + icon wiggle (`.cta:not(.bad)`, CSS). Before v0.22 the numbers mixed black/white: `fg()` picks dark digits on light line colours (TGM lime, 3 teal, 2 amber) and white digits on the others, because white on those three fails contrast. Make all white: `fg=c=>'#fff'` in app.js.
 
 ## UI: line cards always expanded
 Line cards are always fully expanded (header, direction rows, full station track) with no collapse control. A sticky line-jump bar (`.jb`, one coloured badge per line, red dot if that line has a live stop alert) sits under the header; tapping a badge smooth-scrolls to `#l<id>` (`data-j` handler in app.js; `--hh` = header height set by `hh()`). v0.11 removed the `data-tog` handler, chevron, `open` Set and `.tk` collapse CSS.
