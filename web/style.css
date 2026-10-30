@@ -154,3 +154,8 @@ html.lenis,html.lenis body{height:auto}
 .cta:not(.bad) svg{animation:tw 2.6s ease-in-out infinite}
 @keyframes tw{0%,55%,100%{transform:none}65%{transform:rotate(-12deg) translateY(-2px)}75%{transform:rotate(10deg)}85%{transform:rotate(-5deg)}}
 @media(prefers-reduced-motion:reduce){.cta:not(.bad),.cta:not(.bad) svg{animation:none}}
+
+/* v0.23 line-number text: black in light mode, white in dark mode */
+:root{--nt:#000}
+:root[data-theme=dark]{--nt:#fff}
+@media(prefers-color-scheme:dark){:root:not([data-theme]){--nt:#fff}}

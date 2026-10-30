@@ -22,7 +22,7 @@ const agoX=m=>m<60?t('ago')(m):lang=='ar'?'منذ '+durX(m):lang=='fr'?'il y a '
 const ARW=d=>`<svg class="aw" viewBox="0 0 24 24" aria-hidden="true"><path d="${d=='a'?'M12 4v15M5.5 12.5 12 19l6.5-6.5':'M12 20V5M5.5 11.5 12 5l6.5 6.5'}"/></svg>`; // bold arrow: a = down (toward the last station), b = up
 const SW='<svg class="aw" viewBox="0 0 24 24" aria-hidden="true"><path d="M3 8h17M16 4l4 4-4 4M21 16H4M8 12l-4 4 4 4"/></svg>';
 const fz=m=>m<15?'f1':m<30?'f2':m<ST?'f3':'f4'; // freshness: green <15 min, amber <30 min, orange <45 min (ST), then old
-const fg=c=>'#10241a'; // v0.22: ONE text colour on every line colour (dark passes contrast on all 7; white fails on lime/teal/amber)
+const fg=c=>'var(--nt)'; // v0.23: ONE text colour on every line colour, themed: black in light mode, white in dark mode (--nt in style.css)
 const fgOld=c=>{const n=parseInt(c.slice(1),16);return ((n>>16)*299+(n>>8&255)*587+(n&255)*114)/1000>150?'#10241a':'#fff'}; // dark text on light line colours (lime, teal, amber)
 const hh=()=>document.documentElement.style.setProperty('--hh',document.querySelector('header').offsetHeight+'px');
 addEventListener('resize',hh);
