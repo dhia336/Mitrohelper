@@ -3,7 +3,7 @@
 truncate sightings, incidents restart identity cascade;
 
 with v(l,o,d,m,n) as (values
-  ('4',3,'a',4,1),('4',6,'a',13,2),('4',9,'a',31,3),('4',2,'b',7,4),('4',5,'b',26,5),   -- line 4: busy, fresh
+  ('4',3,'a',4,1),('4',3,'a',5,14),('4',3,'a',40,13),('4',6,'a',13,2),('4',9,'a',31,3),('4',2,'b',7,4),('4',5,'b',26,5),   -- line 4: busy. Station #4: 4 min + 5 min = same train reported twice (shows ONE), 40 min = a 2nd train (shows TWO entries)
   ('1',4,'a',61,6),('1',8,'b',125,7),                                                      -- line 1: '1h 1min ago' and '2h 5min ago'
   ('2',3,'a',1500,8),('2',5,'b',3000,9),                                                   -- line 2: '1d 1h ago' and '2d 2h ago'
   ('5',2,'a',20,10),('6',2,'b',8,11),('TGM',2,'a',100,12))                                 -- line 3 has nothing -> 'No report yet'

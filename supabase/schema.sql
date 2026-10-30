@@ -107,109 +107,109 @@ grant execute on function report(int,text,text,text), vote(bigint,int,text,text)
 -- Data. pos = order along the line (gaps of 10 so you can insert stations between). First pos = direction "b" end, last = "a" end.
 insert into lines values ('1','#ff4d5e',1),('2','#ffa31a',2),('3','#1fd1b0',3),('4','#3b82f6',4),('5','#a855f7',5),('6','#ec4899',6),('TGM','#84cc16',7);
 insert into stations(line_id,pos,ar,fr,en) values
-('1',10,'Place de Barcelone','Place de Barcelone','Place de Barcelone'),
-('1',20,'Bab Alioua','Bab Alioua','Bab Alioua'),
-('1',30,'Mohamed Manachou','Mohamed Manachou','Mohamed Manachou'),
-('1',40,'13 Aout','13 Aout','13 Aout'),
-('1',50,'Mohamed Ali','Mohamed Ali','Mohamed Ali'),
-('1',60,'El Kabaria','El Kabaria','El Kabaria'),
-('1',70,'Ibn Sina','Ibn Sina','Ibn Sina'),
-('1',80,'El Ouardia 6','El Ouardia 6','El Ouardia 6'),
-('1',90,'Cité Ennour','Cité Ennour','Cité Ennour'),
-('1',100,'Abou Kacem Echebbi','Abou Kacem Echebbi','Abou Kacem Echebbi'),
-('1',110,'Ben Arous','Ben Arous','Ben Arous'),
-('2',10,'Place de la République','Place de la République','Place de la République'),
-('2',20,'Nelson Mandela','Nelson Mandela','Nelson Mandela'),
-('2',30,'Mohamed V','Mohamed V','Mohamed V'),
-('2',40,'Place de Palestine','Place de Palestine','Place de Palestine'),
-('2',50,'Les Jardins','Les Jardins','Les Jardins'),
-('2',60,'Cité El Khadhra','Cité El Khadhra','Cité El Khadhra'),
-('2',70,'La Jeunesse','La Jeunesse','La Jeunesse'),
-('2',80,'Cité Sportive','Cité Sportive','Cité Sportive'),
-('2',90,'10 Décembre 1948','10 Décembre 1948','10 Décembre 1948'),
-('2',100,'Cité des Sciences','Cité des Sciences','Cité des Sciences'),
+('1',10,'ساحة برشلونة','Place de Barcelone','Place de Barcelone'),
+('1',20,'باب عليوة','Bab Alioua','Bab Alioua'),
+('1',30,'محمد مناشو','Mohamed Manachou','Mohamed Manachou'),
+('1',40,'13 أوت','13 Aout','13 Aout'),
+('1',50,'محمد علي','Mohamed Ali','Mohamed Ali'),
+('1',60,'الكبارية','El Kabaria','El Kabaria'),
+('1',70,'ابن سينا','Ibn Sina','Ibn Sina'),
+('1',80,'الوردية 6','El Ouardia 6','El Ouardia 6'),
+('1',90,'حي النور','Cité Ennour','Cité Ennour'),
+('1',100,'أبو القاسم الشابي','Abou Kacem Echebbi','Abou Kacem Echebbi'),
+('1',110,'بن عروس','Ben Arous','Ben Arous'),
+('2',10,'ساحة الجمهورية','Place de la République','Place de la République'),
+('2',20,'نيلسون مانديلا','Nelson Mandela','Nelson Mandela'),
+('2',30,'محمد الخامس','Mohamed V','Mohamed V'),
+('2',40,'ساحة فلسطين','Place de Palestine','Place de Palestine'),
+('2',50,'الحدائق','Les Jardins','Les Jardins'),
+('2',60,'حي الخضراء','Cité El Khadhra','Cité El Khadhra'),
+('2',70,'الشباب','La Jeunesse','La Jeunesse'),
+('2',80,'المدينة الرياضية','Cité Sportive','Cité Sportive'),
+('2',90,'10 ديسمبر 1948','10 Décembre 1948','10 Décembre 1948'),
+('2',100,'مدينة العلوم','Cité des Sciences','Cité des Sciences'),
 ('2',110,'L''Independance','L''Independance','L''Independance'),
-('2',120,'Ariana','Ariana','Ariana'),
-('3',10,'Tunis Marine','Tunis Marine','Tunis Marine'),
-('3',20,'Farhat Hached','Farhat Hached','Farhat Hached'),
-('3',30,'Place de Barcelone','Place de Barcelone','Place de Barcelone'),
-('3',40,'Place de la République','Place de la République','Place de la République'),
-('3',50,'Bab El Khadhra','Bab El Khadhra','Bab El Khadhra'),
-('3',60,'Bab Laassal','Bab Laassal','Bab Laassal'),
-('3',70,'Bab Saadoun','Bab Saadoun','Bab Saadoun'),
-('3',80,'Campus Manar','Campus Manar','Campus Manar'),
-('3',90,'14 Jan 2011','14 Jan 2011','14 Jan 2011'),
-('3',100,'Les Jasmins','Les Jasmins','Les Jasmins'),
-('3',110,'Ibn Khaldoun','Ibn Khaldoun','Ibn Khaldoun'),
-('4',10,'Place de Barcelone','Place de Barcelone','Place de Barcelone'),
-('4',20,'Place de la République','Place de la République','Place de la République'),
-('4',30,'Bab El Khadhra','Bab El Khadhra','Bab El Khadhra'),
-('4',40,'Bab Laassal','Bab Laassal','Bab Laassal'),
-('4',50,'Bab Saadoun','Bab Saadoun','Bab Saadoun'),
-('4',60,'Bouchoucha','Bouchoucha','Bouchoucha'),
-('4',70,'20 Mars','20 Mars','20 Mars'),
-('4',80,'Bardo','Bardo','Bardo'),
-('4',90,'Essaidia','Essaidia','Essaidia'),
-('4',100,'Khaznadar','Khaznadar','Khaznadar'),
+('2',120,'أريانة','Ariana','Ariana'),
+('3',10,'تونس البحرية','Tunis Marine','Tunis Marine'),
+('3',20,'فرحات حشاد','Farhat Hached','Farhat Hached'),
+('3',30,'ساحة برشلونة','Place de Barcelone','Place de Barcelone'),
+('3',40,'ساحة الجمهورية','Place de la République','Place de la République'),
+('3',50,'باب الخضراء','Bab El Khadhra','Bab El Khadhra'),
+('3',60,'باب العسل','Bab Laassal','Bab Laassal'),
+('3',70,'باب سعدون','Bab Saadoun','Bab Saadoun'),
+('3',80,'الحرم الجامعي المنار','Campus Manar','Campus Manar'),
+('3',90,'14 جانفي 2011','14 Jan 2011','14 Jan 2011'),
+('3',100,'الياسمين','Les Jasmins','Les Jasmins'),
+('3',110,'ابن خلدون','Ibn Khaldoun','Ibn Khaldoun'),
+('4',10,'ساحة برشلونة','Place de Barcelone','Place de Barcelone'),
+('4',20,'ساحة الجمهورية','Place de la République','Place de la République'),
+('4',30,'باب الخضراء','Bab El Khadhra','Bab El Khadhra'),
+('4',40,'باب العسل','Bab Laassal','Bab Laassal'),
+('4',50,'باب سعدون','Bab Saadoun','Bab Saadoun'),
+('4',60,'بوشوشة','Bouchoucha','Bouchoucha'),
+('4',70,'20 مارس','20 Mars','20 Mars'),
+('4',80,'باردو','Bardo','Bardo'),
+('4',90,'السعيدية','Essaidia','Essaidia'),
+('4',100,'خزندار','Khaznadar','Khaznadar'),
 ('4',110,'L''Artisanat','L''Artisanat','L''Artisanat'),
-('4',120,'Denden','Denden','Denden'),
-('4',130,'Manouba','Manouba','Manouba'),
-('4',140,'Slimane Kahia','Slimane Kahia','Slimane Kahia'),
-('4',150,'Moncef Bey','Moncef Bey','Moncef Bey'),
-('4',160,'Aboubaker El Razi','Aboubaker El Razi','Aboubaker El Razi'),
-('4',170,'Le Pole Tech','Le Pole Tech','Le Pole Tech'),
-('4',180,'Ksar El Warda','Ksar El Warda','Ksar El Warda'),
-('4',190,'Le Campus','Le Campus','Le Campus'),
-('4',200,'Kheireddine','Kheireddine','Kheireddine'),
-('5',10,'Place de Barcelone','Place de Barcelone','Place de Barcelone'),
-('5',20,'Place de la République','Place de la République','Place de la République'),
-('5',30,'Bab El Khadhra','Bab El Khadhra','Bab El Khadhra'),
-('5',40,'Bab Laassal','Bab Laassal','Bab Laassal'),
-('5',50,'Bab Saadoun','Bab Saadoun','Bab Saadoun'),
-('5',60,'Mefteh Saadallah','Mefteh Saadallah','Mefteh Saadallah'),
-('5',70,'Rommana','Rommana','Rommana'),
-('5',80,'Campus Manar','Campus Manar','Campus Manar'),
-('5',90,'14 Jan 2011','14 Jan 2011','14 Jan 2011'),
-('5',100,'Les Jasmins','Les Jasmins','Les Jasmins'),
-('5',110,'Ettahrir','Ettahrir','Ettahrir'),
-('5',120,'Omrane Sup','Omrane Sup','Omrane Sup'),
-('5',130,'Ettadhamen','Ettadhamen','Ettadhamen'),
-('5',140,'Intikala','Intikala','Intikala'),
-('6',10,'Tunis Marine','Tunis Marine','Tunis Marine'),
-('6',20,'Farhat Hached','Farhat Hached','Farhat Hached'),
-('6',30,'Place de Barcelone','Place de Barcelone','Place de Barcelone'),
-('6',40,'Bab Alioua','Bab Alioua','Bab Alioua'),
-('6',50,'Mohamed Manachou','Mohamed Manachou','Mohamed Manachou'),
-('6',60,'13 Aout','13 Aout','13 Aout'),
-('6',70,'Mohamed Ali','Mohamed Ali','Mohamed Ali'),
-('6',80,'Taher Haddad','Taher Haddad','Taher Haddad'),
-('6',90,'Ghazeli','Ghazeli','Ghazeli'),
-('6',100,'Cité Municipale','Cité Municipale','Cité Municipale'),
-('6',110,'Ennesri','Ennesri','Ennesri'),
-('6',120,'El Montazah','El Montazah','El Montazah'),
-('6',130,'El Mourouj 2','El Mourouj 2','El Mourouj 2'),
-('6',140,'El Mourouj 1','El Mourouj 1','El Mourouj 1'),
+('4',120,'الدندان','Denden','Denden'),
+('4',130,'منوبة','Manouba','Manouba'),
+('4',140,'سليمان كاهية','Slimane Kahia','Slimane Kahia'),
+('4',150,'منصف باي','Moncef Bey','Moncef Bey'),
+('4',160,'أبو بكر الرازي','Aboubaker El Razi','Aboubaker El Razi'),
+('4',170,'القطب التكنولوجي','Le Pole Tech','Le Pole Tech'),
+('4',180,'قصر الوردة','Ksar El Warda','Ksar El Warda'),
+('4',190,'الحرم الجامعي','Le Campus','Le Campus'),
+('4',200,'خير الدين','Kheireddine','Kheireddine'),
+('5',10,'ساحة برشلونة','Place de Barcelone','Place de Barcelone'),
+('5',20,'ساحة الجمهورية','Place de la République','Place de la République'),
+('5',30,'باب الخضراء','Bab El Khadhra','Bab El Khadhra'),
+('5',40,'باب العسل','Bab Laassal','Bab Laassal'),
+('5',50,'باب سعدون','Bab Saadoun','Bab Saadoun'),
+('5',60,'مفتاح سعد الله','Mefteh Saadallah','Mefteh Saadallah'),
+('5',70,'الرمانة','Rommana','Rommana'),
+('5',80,'الحرم الجامعي المنار','Campus Manar','Campus Manar'),
+('5',90,'14 جانفي 2011','14 Jan 2011','14 Jan 2011'),
+('5',100,'الياسمين','Les Jasmins','Les Jasmins'),
+('5',110,'التحرير','Ettahrir','Ettahrir'),
+('5',120,'العمران الأعلى','Omrane Sup','Omrane Sup'),
+('5',130,'التضامن','Ettadhamen','Ettadhamen'),
+('5',140,'الانطلاقة','Intikala','Intikala'),
+('6',10,'تونس البحرية','Tunis Marine','Tunis Marine'),
+('6',20,'فرحات حشاد','Farhat Hached','Farhat Hached'),
+('6',30,'ساحة برشلونة','Place de Barcelone','Place de Barcelone'),
+('6',40,'باب عليوة','Bab Alioua','Bab Alioua'),
+('6',50,'محمد مناشو','Mohamed Manachou','Mohamed Manachou'),
+('6',60,'13 أوت','13 Aout','13 Aout'),
+('6',70,'محمد علي','Mohamed Ali','Mohamed Ali'),
+('6',80,'الطاهر الحداد','Taher Haddad','Taher Haddad'),
+('6',90,'الغزالي','Ghazeli','Ghazeli'),
+('6',100,'الحي البلدي','Cité Municipale','Cité Municipale'),
+('6',110,'النسري','Ennesri','Ennesri'),
+('6',120,'المنتزه','El Montazah','El Montazah'),
+('6',130,'المروج 2','El Mourouj 2','El Mourouj 2'),
+('6',140,'المروج 1','El Mourouj 1','El Mourouj 1'),
 ('6',150,'L''Environnement','L''Environnement','L''Environnement'),
-('6',160,'El Mourouj 3','El Mourouj 3','El Mourouj 3'),
-('6',170,'Les Martyrs','Les Martyrs','Les Martyrs'),
-('6',180,'El Mourouj 4','El Mourouj 4','El Mourouj 4'),
-('TGM',10,'Tunis Marine','Tunis Marine','Tunis Marine'),
-('TGM',20,'Le Bac','Le Bac','Le Bac'),
-('TGM',30,'La Goulette','La Goulette','La Goulette'),
-('TGM',40,'La Goulette Neuve','La Goulette Neuve','La Goulette Neuve'),
-('TGM',50,'La Goulette Casino','La Goulette Casino','La Goulette Casino'),
-('TGM',60,'Kheireddine','Kheireddine','Kheireddine'),
+('6',160,'المروج 3','El Mourouj 3','El Mourouj 3'),
+('6',170,'الشهداء','Les Martyrs','Les Martyrs'),
+('6',180,'المروج 4','El Mourouj 4','El Mourouj 4'),
+('TGM',10,'تونس البحرية','Tunis Marine','Tunis Marine'),
+('TGM',20,'الباك','Le Bac','Le Bac'),
+('TGM',30,'حلق الوادي','La Goulette','La Goulette'),
+('TGM',40,'حلق الوادي الجديدة','La Goulette Neuve','La Goulette Neuve'),
+('TGM',50,'حلق الوادي الكازينو','La Goulette Casino','La Goulette Casino'),
+('TGM',60,'خير الدين','Kheireddine','Kheireddine'),
 ('TGM',70,'L''Aeroport','L''Aeroport','L''Aeroport'),
-('TGM',80,'Le Kram','Le Kram','Le Kram'),
-('TGM',90,'Carthage Byrsa','Carthage Byrsa','Carthage Byrsa'),
-('TGM',100,'Carthage Dermech','Carthage Dermech','Carthage Dermech'),
-('TGM',110,'Carthage Hannibal','Carthage Hannibal','Carthage Hannibal'),
-('TGM',120,'Carthage Presidence','Carthage Presidence','Carthage Presidence'),
-('TGM',130,'Carthage Amilcar','Carthage Amilcar','Carthage Amilcar'),
-('TGM',140,'Sidi Bou Said','Sidi Bou Said','Sidi Bou Said'),
-('TGM',150,'Sidi Dhrif','Sidi Dhrif','Sidi Dhrif'),
-('TGM',160,'La Corniche','La Corniche','La Corniche'),
-('TGM',170,'Marsa Plage','Marsa Plage','Marsa Plage');
+('TGM',80,'الكرم','Le Kram','Le Kram'),
+('TGM',90,'قرطاج بيرصة','Carthage Byrsa','Carthage Byrsa'),
+('TGM',100,'قرطاج درمش','Carthage Dermech','Carthage Dermech'),
+('TGM',110,'قرطاج حنبعل','Carthage Hannibal','Carthage Hannibal'),
+('TGM',120,'قرطاج الرئاسة','Carthage Presidence','Carthage Presidence'),
+('TGM',130,'قرطاج أميلكار','Carthage Amilcar','Carthage Amilcar'),
+('TGM',140,'سيدي بوسعيد','Sidi Bou Said','Sidi Bou Said'),
+('TGM',150,'سيدي الظريف','Sidi Dhrif','Sidi Dhrif'),
+('TGM',160,'الكورنيش','La Corniche','La Corniche'),
+('TGM',170,'المرسى الشاطئ','Marsa Plage','Marsa Plage');
 
 -- Optional cleanup (enable pg_cron in Database > Extensions first):
 -- select cron.schedule('purge','0 3 * * *',$$delete from sightings where seen_at<now()-interval '60 days'$$);
@@ -398,3 +398,60 @@ end $$;
 
 revoke all on function report(int,text,text,text), vote(bigint,int,text,text), report_incident(int,text,text), vote_incident(bigint,int,text,text) from public, anon, authenticated;
 grant execute on function report(int,text,text,text), vote(bigint,int,text,text), report_incident(int,text,text), vote_incident(bigint,int,text,text) to service_role;
+
+-- v0.17 (replaces the `live` view of v7). Safe to re-run. Needs v7 (or schema.sql) applied first.
+-- Everything stays visible until its own 90-minute timer ends (max 5 per line+direction, owner's cap),
+-- PLUS the 3 newest sightings (one per station+direction) of each line+direction are kept whatever their age (30-day floor),
+-- so quiet lines never look empty. Same train reported twice (same station+direction within 4 min of a newer report) = one row.
+-- Rows hidden by votes (down-up>=2) are skipped. 90 here must match ST in web/app.js.
+create or replace view live as
+with cand as (
+  select s.id, st.line_id, s.station_id, s.dir, s.seen_at, s.up, s.down
+  from sightings s join stations st on st.id=s.station_id
+  where s.seen_at > now()-interval '30 days' and s.down-s.up<2
+    and not exists(select 1 from sightings n where n.station_id=s.station_id and n.dir=s.dir
+                   and n.seen_at>s.seen_at and n.seen_at<=s.seen_at+interval '4 minutes' and n.down-n.up<2)
+), r as (
+  select c.*,
+    row_number() over (partition by line_id, dir order by seen_at desc, id desc) as rn,
+    row_number() over (partition by station_id, dir order by seen_at desc, id desc) as rs
+  from cand c
+), f as (
+  select r.*, row_number() over (partition by line_id, dir order by seen_at desc, id desc) as rr from r where rs=1
+)
+select id, line_id, station_id, dir, seen_at, up, down from r where seen_at > now()-interval '90 minutes' and rn<=5
+union
+select id, line_id, station_id, dir, seen_at, up, down from f where rr<=3;
+
+-- v0.18: a 2nd report of the SAME TRAIN replaces the first and counts as +1 confirmation. Safe to re-run.
+-- Same train = same STATION (so same line) + same direction, and the older report is <= 3 min old and not hidden by votes.
+-- The old report is deleted; its votes move to the new one; its reporter counts as +1 (unless it was the SAME device: then it is only replaced).
+create or replace function report(p_station int, p_dir text, p_dev text, p_ip text) returns text
+language plpgsql security definer set search_path=public as $$
+declare v_ip text := md5(coalesce(p_ip,'?')); v_new bigint; v_old record; v_up int := 0; v_mins int := 3;
+begin
+  if p_dev is null or length(p_dev)<16 or p_dir not in ('a','b') then return 'bad'; end if;
+  if exists(select 1 from banned where k in (p_dev,v_ip)) then return 'bad'; end if;
+  if is_blocked(p_dev) then return 'blocked'; end if;
+  if not exists(select 1 from stations where id=p_station) then return 'bad'; end if;
+  if exists(select 1 from sightings where dev=p_dev and seen_at>now()-interval '2 minutes') then return 'slow'; end if;
+  if (select count(*) from sightings where ip=v_ip and seen_at>now()-interval '1 hour')>120 then return 'slow'; end if; -- generous: mobile carriers share IPs
+  insert into sightings(station_id,dir,dev,ip) values(p_station,p_dir,p_dev,v_ip) returning id into v_new;
+
+  select * into v_old from sightings
+  where station_id=p_station and dir=p_dir and id<>v_new
+    and seen_at>now()-make_interval(mins => v_mins) and down-up<2
+  order by seen_at desc limit 1;
+  if found then
+    update votes set sighting_id=v_new where sighting_id=v_old.id;                                    -- keep who already voted
+    if v_old.dev<>p_dev then
+      insert into votes(sighting_id,dev,v,ip) values(v_new,v_old.dev,1,v_old.ip) on conflict do nothing; -- the old reporter cannot also tap 👍
+      if found then v_up := 1; end if;
+    end if;
+    update sightings set up=v_old.up+v_up, down=v_old.down where id=v_new;
+    delete from sightings where id=v_old.id;
+  end if;
+  return 'ok';
+end $$;
+revoke all on function report(int,text,text,text) from public, anon, authenticated;
+grant execute on function report(int,text,text,text) to service_role;
