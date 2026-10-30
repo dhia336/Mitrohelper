@@ -14,6 +14,14 @@ Directions: `a` = toward highest `pos` station, `b` = toward lowest. Add station
 ## UI: line cards always expanded
 Line cards are always fully expanded (header, direction rows, full station track) with no collapse control. A sticky line-jump bar (`.jb`, one coloured badge per line, red dot if that line has a live stop alert) sits under the header; tapping a badge smooth-scrolls to `#l<id>` (`data-j` handler in app.js; `--hh` = header height set by `hh()`). v0.11 removed the `data-tog` handler, chevron, `open` Set and `.tk` collapse CSS.
 
+## v0.20: card readability (frontend only)
+- **Arrows** are bold SVG icons (`ARW(d)`, `.aw`), not the thin text glyphs ↓ ↑ ⇄: a round badge `.dg` in the line colour next to 'toward X' (a = down = toward the last station, b = up), and inside every chip.
+- **Sighting row** = station name as the headline (`.sn`, 1.25rem bold) + a time pill (`.tm`) coloured by freshness (`fz()`: green < 20 min, amber < 1 h, orange < 90 min, grey dashed = older = last known) + a thicker bar in the same colour. Old sightings are no longer faded with opacity (it hurt readability), they use a dashed pill and muted name.
+- **Vote buttons** are 44px tall (`.vt button`). The stop-alert buttons are one line each.
+- **Station list**: bigger rows and chips; chip text is compact without 'ago' (`durX`: `18min`, `1h 18min`, `1d 1h`; fr/ar equivalents); chip arrow + `aria-label`/`title` 'toward X · time ago'.
+- **Text colour on line colours**: `fg()` picks dark text for light line colours (lime TGM, teal 3, amber 2) and white for the rest, via `--ct` on the card, jump bar and sheet buttons.
+- Looked at with a headless Chromium on mock data (Arabic dark, English light, 360px and 390px wide, TGM, stop alert, old sightings); not yet on a real phone.
+
 ## Testing before deploying (v0.16)
 Never test on the live site. Use a second (free) Supabase project and a `staging` environment of the same Worker (`[env.staging]` in wrangler.toml); no code is duplicated.
 1. Supabase: create a project `mitrohelper-test`. SQL editor: run `supabase/schema.sql` (contains everything up to the latest migration, v8), then `supabase/test_seed.sql` for sample data. NEVER run test_seed.sql on production (it empties the tables).
