@@ -26,7 +26,7 @@ export default{async fetch(req,env,ctx){
   else if((p=='/api/vote'||p=='/api/ivote')&&int(b.id)&&(b.v==1||b.v==-1)){fn=p=='/api/vote'?'vote':'vote_incident';args={...base,p_id:b.id,p_v:b.v}}
   else return J({r:'bad'},400);
   if(human&&env.TURNSTILE_SECRET){const f=new FormData();f.append('secret',env.TURNSTILE_SECRET);f.append('response',b.ts||'');f.append('remoteip',ip);
-   const v=await(await fetch('https://challenges.cloudflare.com/turnstile/v0/siteverify',{method:'POST',body:f})).json();if(!v.success)return J({r:'bot'},403)}
+   const v=await(await fetch('https://challenges.cloudflare.com/turnstile/v0/siteverify',{method:'POST',body:f})).json();if(!v.success){console.log('turnstile rejected',JSON.stringify(v['error-codes']),'host',v.hostname);return J({r:'bot',c:v['error-codes']||[]},403)}}
   const r=await sb('rpc/'+fn,args);if(r==='ok')ctx.waitUntil(caches.default.delete(liveKey));
-  return J({r:typeof r=='string'?r:'err'});
- }catch(e){return J({r:'err'},500)}}};
+  if(typeof r!='string'){console.log('rpc failed',fn,JSON.stringify(r).slice(0,300));return J({r:'db'},500)}return J({r});
+ }catch(e){console.log('worker error',String(e));return J({r:'err'},500)}}};
