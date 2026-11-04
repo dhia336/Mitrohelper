@@ -4,7 +4,7 @@ Crowd-sourced live sightings for Tunis light metro (lines 1-6). 3 taps to report
 ## Layout
 - `web/robots.txt` + `web/sitemap.xml` SEO files (canonical URL = the workers.dev address, see PROGRESS 27) · `web/fx.js` theme toggle + tap animations (ripple, vote bursts, confetti, jump flash) · `web/icons/logo.svg` the ONE logo (header `<img>`, tab favicon; `192.png`/`512.png` are renders of it) · `web/index.html` shell · `web/style.css` mobile-first styles · `web/app.js` UI, i18n, polling (20s), voting · `web/config.js` Supabase URL+anon key
 - `supabase/update_stations.sql`/`update_colors.sql` migrations for existing DBs · `web/sw.js` offline shell cache · `web/manifest.webmanifest` + `web/icons/` install-as-app
-- `supabase/migrate_v5.sql` stop-report rules · `supabase/migrate_v4.sql` live_all() + rate-limit indexes · `supabase/schema.sql` tables, RLS, `report()`/`vote()` functions, seed data
+- `supabase/migrate_v11.sql` visits table + `hit()`/`my_stats()` (retention, see PROGRESS 29; retention queries at the bottom of `admin_queries.sql`) · `supabase/migrate_v5.sql` stop-report rules · `supabase/migrate_v4.sql` live_all() + rate-limit indexes · `supabase/schema.sql` tables, RLS, `report()`/`vote()` functions, seed data
 
 ## Architecture
 Static site (Cloudflare Pages/GitHub Pages) -> Supabase REST. Anon can only SELECT `lines`, `stations`, `live` (view hides device/IP). Writes ONLY via `report()` and `vote()` (security definer).
@@ -86,3 +86,6 @@ Moderation: insert a device id or `md5(ip)` into table `banned`.
 1. Supabase free project -> SQL Editor -> run `supabase/schema.sql`.
 2. Put URL + anon key in `web/config.js`.
 3. Deploy `web/` to Cloudflare Pages (no build command, output dir `web`). Test locally: `cd web && python3 -m http.server`.
+
+## v0.28: retention
+`POST /api/hit {src,sa}` once a day per device (anonymous, no IP) -> table `visits`. `POST /api/me` -> `{reports,confirms}` (30 days) for the 'riders confirmed your reports' toast. Tag share links with `?src=<group>` to see which Facebook group brings people who come back. Details and rationale: PROGRESS 29.

@@ -20,6 +20,8 @@ export default{async fetch(req,env,ctx){
   if(req.method!='POST')return J({r:'bad'},404);
   if(!al.includes('*')&&o&&!al.includes(o))return J({r:'bad'},403);
   const b=await req.json().catch(()=>null);if(!b||!devOk(b.dev))return J({r:'bad'},400);
+  if(p=='/api/hit'){const src=typeof b.src=='string'&&/^[a-z0-9_-]{0,20}$/i.test(b.src)?b.src:'';const r=await sb('rpc/hit',{p_dev:b.dev,p_src:src,p_sa:b.sa===true});return typeof r=='string'?J({r}):J({r:'db'},500)} // v0.28: anonymous once-a-day visit (no IP stored)
+  if(p=='/api/me'){const r=await sb('rpc/my_stats',{p_dev:b.dev});return r&&typeof r=='object'?J({r}):J({r:'db'},500)} // v0.28: {reports,confirms} of this device, last 30 days
   const ip=req.headers.get('CF-Connecting-IP')||'?',base={p_dev:b.dev,p_ip:ip};let fn,args,human=false;
   if(p=='/api/report'&&int(b.station)&&(b.dir=='a'||b.dir=='b')){fn='report';args={...base,p_station:b.station,p_dir:b.dir};human=true}
   else if(p=='/api/incident'&&int(b.station)){fn='report_incident';args={...base,p_station:b.station};human=true}
