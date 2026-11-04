@@ -159,3 +159,4 @@ html.lenis,html.lenis body{height:auto}
 :root{--nt:#000}
 :root[data-theme=dark]{--nt:#fff}
 @media(prefers-color-scheme:dark){:root:not([data-theme]){--nt:#fff}}
+#about{margin:2rem auto calc(7rem + env(safe-area-inset-bottom));max-width:34rem;padding:0 1rem}#about h2{font-size:.85rem;margin:0 0 .5rem;color:var(--mu)}#about p{margin:.4rem 0}

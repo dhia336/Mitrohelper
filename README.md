@@ -2,7 +2,7 @@
 Crowd-sourced live sightings for Tunis light metro (lines 1-6). 3 taps to report; live board per line/direction; ar/fr/en; installable PWA. Free stack, no build step.
 
 ## Layout
-- `web/fx.js` theme toggle + tap animations (ripple, vote bursts, confetti, jump flash) · `web/icons/logo.svg` the ONE logo (header `<img>`, tab favicon; `192.png`/`512.png` are renders of it) · `web/index.html` shell · `web/style.css` mobile-first styles · `web/app.js` UI, i18n, polling (20s), voting · `web/config.js` Supabase URL+anon key
+- `web/robots.txt` + `web/sitemap.xml` SEO files (canonical URL = the workers.dev address, see PROGRESS 27) · `web/fx.js` theme toggle + tap animations (ripple, vote bursts, confetti, jump flash) · `web/icons/logo.svg` the ONE logo (header `<img>`, tab favicon; `192.png`/`512.png` are renders of it) · `web/index.html` shell · `web/style.css` mobile-first styles · `web/app.js` UI, i18n, polling (20s), voting · `web/config.js` Supabase URL+anon key
 - `supabase/update_stations.sql`/`update_colors.sql` migrations for existing DBs · `web/sw.js` offline shell cache · `web/manifest.webmanifest` + `web/icons/` install-as-app
 - `supabase/migrate_v5.sql` stop-report rules · `supabase/migrate_v4.sql` live_all() + rate-limit indexes · `supabase/schema.sql` tables, RLS, `report()`/`vote()` functions, seed data
 

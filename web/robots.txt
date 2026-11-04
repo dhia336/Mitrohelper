@@ -1,0 +1,5 @@
+User-agent: *
+Allow: /
+Disallow: /api/
+
+Sitemap: https://mitrohelper.dhia336.workers.dev/sitemap.xml
