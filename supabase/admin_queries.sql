@@ -39,3 +39,12 @@ from sightings where seen_at>now()-interval '24 hours' group by ip having count(
 -- with f as (select distinct on (dev) dev, src, day from visits order by dev, day)
 -- select coalesce(nullif(src,''),'(none)') src, count(*) devices, count(*) filter (where exists(select 1 from visits x where x.dev=f.dev and x.day>f.day)) came_back, count(*) filter (where exists(select 1 from sightings s where s.dev=f.dev) or exists(select 1 from incidents i where i.dev=f.dev)) reported
 -- from f group by 1 order by 2 desc;
+
+-- ===== v12 leaderboard audit: look at the top 20 of this week for farming signs (run before trusting the board) =====
+-- other_devs_same_ip > 0 on a top device = several devices on one IP (could be a farm, or a family / mobile carrier: judge by the other columns). Ban: insert into banned(k) values ('DEVICE-ID'); it leaves the board at once.
+-- with r as (select * from lb_range('week')), s as (select * from lb_scores((select f from r),(select t from r)) order by points desc limit 20)
+-- select s.dev, nick(s.dev) nick, s.points, s.reports, s.confirms, s.days, round(s.reports::numeric/s.days,1) per_day,
+--  (select count(distinct station_id) from sightings x where x.dev=s.dev and x.seen_at>=(select f from r)) stations,
+--  (select count(*) from sightings x where x.dev=s.dev and x.seen_at>=(select f from r) and x.down>0) downvoted,
+--  (select count(distinct y.dev) from sightings y where y.dev<>s.dev and y.seen_at>=(select f from r) and y.ip in (select z.ip from sightings z where z.dev=s.dev and z.seen_at>=(select f from r))) other_devs_same_ip
+-- from s order by s.points desc;

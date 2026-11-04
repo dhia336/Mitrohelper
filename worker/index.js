@@ -16,6 +16,8 @@ export default{async fetch(req,env,ctx){
   if(req.method=='GET'&&p=='/api/data')return cached(req,300,async()=>{const[lines,stations]=await Promise.all([sb('lines?select=*&order=sort'),sb('stations?select=*&order=line_id,pos')]);return{lines,stations}});
   if(req.method=='GET'&&p=='/api/live')return cached(liveKey,20,async()=>{let r=await sb('rpc/live_all',{}); // one query (migrate_v4.sql); fallback to 2 queries if the function is not installed yet
    if(!r||!Array.isArray(r.s)){const[s,i]=await Promise.all([sb('live?select=*'),sb('live_incidents?select=*')]);if(!Array.isArray(s))throw 0;r={s,i}}r.t=Date.now();return r});
+  if(req.method=='GET'&&p=='/api/lb'){const per=['week','last','month'].includes(u.searchParams.get('p'))?u.searchParams.get('p'):'week'; // v0.29 public top 10 (no device ids), edge-cached 60s per period
+   return cached(new Request(u.origin+'/api/lb?p='+per),60,async()=>{const r=await sb('rpc/leaderboard',{p_period:per});if(!r||!Array.isArray(r.rows))throw 0;return r})}
   if(p=='/api/cron'){if(!env.CRON_KEY||req.headers.get('x-cron-key')!==env.CRON_KEY)return J({r:'denied'},403);return J({r:'ok',purged:await sb('rpc/purge_old',{})})}
   if(req.method!='POST')return J({r:'bad'},404);
   if(!al.includes('*')&&o&&!al.includes(o))return J({r:'bad'},403);
