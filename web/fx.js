@@ -22,7 +22,7 @@ document.addEventListener('click',e=>{
 let L;const layer=()=>L||(L=document.body.appendChild(Object.assign(document.createElement('div'),{id:'fx'})));
 function spawn(x,y,o){
   const e=document.createElement('i');
-  if(o.t){e.textContent=o.t;e.style.fontSize=o.s+'px'}else{e.style.width=o.s+'px';e.style.height=(o.r?o.s*o.r:o.s)+'px';e.style.background=o.c;e.style.borderRadius=o.r?'2px':'50%'}
+  if(o.i){e.innerHTML=`<svg viewBox="0 0 24 24" style="width:${o.s}px;height:${o.s}px;color:${o.c}"><use href="#i-${o.i}"/></svg>`}else{e.style.width=o.s+'px';e.style.height=(o.r?o.s*o.r:o.s)+'px';e.style.background=o.c;e.style.borderRadius=o.r?'2px':'50%'}
   layer().appendChild(e);
   const a=e.animate([{transform:`translate(${x}px,${y}px) rotate(0deg) scale(.4)`,opacity:1},
     {transform:`translate(${x+o.dx*.65}px,${y+o.dy*.65}px) rotate(${o.rot*.6}deg) scale(1)`,opacity:1,offset:.45},
@@ -34,11 +34,11 @@ function confetti(x,y){
   if(rm.matches)return;const c=cols();
   for(let i=0;i<34;i++){const a=$(-Math.PI*.95,-Math.PI*.05),v=$(90,230);
     spawn(x,y,{c:c[i%c.length],s:$(6,10),r:i%3?1.6:0,dx:Math.cos(a)*v,dy:Math.sin(a)*v,g:$(120,220),rot:$(-540,540),d:$(1000,1500)})}
-  ['🚇','✨','🚇','✨'].forEach(t=>{const a=$(-Math.PI*.9,-Math.PI*.1),v=$(80,170);spawn(x,y,{t,s:$(18,26),dx:Math.cos(a)*v,dy:Math.sin(a)*v,g:$(60,120),rot:$(-60,60),d:$(1100,1500)})});
+  ['tram','check','tram','tram'].forEach((i,k)=>{const a=$(-Math.PI*.9,-Math.PI*.1),v=$(80,170);spawn(x,y,{i,c:c[k%c.length],s:$(20,28),dx:Math.cos(a)*v,dy:Math.sin(a)*v,g:$(60,120),rot:$(-60,60),d:$(1100,1500)})});
 }
-function pop(x,y,t){
+function pop(x,y,i,c){
   if(rm.matches)return;
-  for(let i=0;i<6;i++)spawn(x,y,{t,s:$(16,26),dx:$(-46,46),dy:$(-120,-60),g:0,rot:$(-40,40),d:$(650,950)});
+  for(let n=0;n<6;n++)spawn(x,y,{i,c,s:$(16,24),dx:$(-46,46),dy:$(-120,-60),g:0,rot:$(-40,40),d:$(650,950)});
 }
 function flash(card,badge){
   if(rm.matches||!card)return;
@@ -60,7 +60,7 @@ document.addEventListener('pointerdown',e=>{
 },{passive:true,capture:true});
 document.addEventListener('click',e=>{
   const t=e.target;let b=t.closest('[data-v],[data-iv]');
-  if(b){const v=+(b.dataset.iv||b.dataset.v),r=b.getBoundingClientRect();pop(r.left+r.width/2,r.top+r.height/2,v>0?'👍':'👎')}
+  if(b){const v=+(b.dataset.iv||b.dataset.v),r=b.getBoundingClientRect();pop(r.left+r.width/2,r.top+r.height/2,v>0?'check':'x',v>0?'#12a35a':'#e5383b')}
   if(b=t.closest('[data-j]'))flash(document.getElementById('l'+b.dataset.j),b);
   if(b=t.closest('[data-share]')){b.classList.remove('go');void b.offsetWidth;b.classList.add('go')}
 },true);

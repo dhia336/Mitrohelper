@@ -92,3 +92,6 @@ Moderation: insert a device id or `md5(ip)` into table `banned`.
 
 ## v0.29: leaderboard
 🏆 pill in the hero opens a sheet (`S.mode=='lb'`, `lbHTML()` in app.js): weekly / last week / 30 days top 10 with generated nicknames, most-reported line badge, points, reports, 👍, days, station, plus the user's own rank. Server: `GET /api/lb?p=` (public, cached 60s) and `POST /api/me` (own rank). Rules and anti-farming: PROGRESS 30; audit query at the bottom of `supabase/admin_queries.sql`.
+
+## v0.31: look and icons
+Station-signage design (PROGRESS 32): coloured sign band per line card, departure-board line bar with minutes since the last sighting, hero tram on a rail. Icons are an inline SVG sprite at the top of `web/index.html`; use `IC('name')` in app.js, add a `<symbol id="i-name">` to add one. No web font (system stack) to keep first paint fast; how to add one is in PROGRESS 32.
