@@ -24,18 +24,19 @@ header{position:sticky;top:0;z-index:5;display:flex;align-items:center;gap:.7rem
 main{max-width:34rem;margin:auto;padding:0 1rem calc(6.5rem + env(safe-area-inset-bottom))}
 
 /* hero: local photo, a rail with a tram crossing it */
-.hero{position:relative;height:12.5rem;margin:0 -1rem;overflow:hidden;background:#1c3a2a}
+.hero{position:relative;height:13.2rem;margin:0 -1rem;overflow:hidden;background:#1c3a2a}
 .hero img{width:100%;height:100%;object-fit:cover;object-position:30% 60%}
 .hero::after{content:"";position:absolute;inset:0;background:linear-gradient(0deg,#08140dd9 0,#08140d33 60%,#0000)}
-.hc{position:absolute;z-index:1;inset-inline:1rem;bottom:1.7rem;color:#fff}
+.hc{position:absolute;z-index:1;inset-inline:1rem;bottom:2.5rem;color:#fff}
 .hc h2{margin:.5rem 0 0;max-width:20rem;font-size:1.6rem;line-height:1.15;font-weight:800;letter-spacing:-.015em}
 .chip{display:inline-flex;align-items:center;gap:.45rem;padding:.25rem .65rem;border-radius:var(--r1);background:#ffffff26;font-size:.8rem;font-weight:700}
 .chip .ic{width:1rem;height:1rem}.chip.warn{background:var(--rd);margin-inline-start:.4rem}
-.rail{position:absolute;z-index:1;inset-inline:0;bottom:0;height:1.3rem;overflow:hidden;pointer-events:none}
-.rl{position:absolute;inset-inline:0;bottom:.32rem;height:4px;background:repeating-linear-gradient(90deg,#ffffffb3 0 8px,#0000 8px 15px)}
-.rt{position:absolute;inset-inline-start:-2rem;bottom:.45rem;width:1.1rem;height:1.1rem;color:#fff;stroke-width:2.2;animation:tr 24s linear infinite}
-@keyframes tr{to{transform:translateX(calc(var(--d,1)*(100vw + 3rem)))}}
-@supports (width:1cqw){.rail{container-type:inline-size}@keyframes tr{to{transform:translateX(calc(var(--d,1)*(100cqw + 3rem)))}}}
+.rail{position:absolute;z-index:1;inset-inline:0;bottom:0;height:2.1rem;overflow:hidden;pointer-events:none}
+.rail::before{content:"";position:absolute;inset-inline:0;top:.15rem;height:1.5px;background:#ffffff66}
+.rl{position:absolute;inset-inline:0;bottom:.22rem;height:4px;background:repeating-linear-gradient(90deg,#ffffffb3 0 8px,#0000 8px 15px)}
+.rt{position:absolute;inset-inline-start:-5rem;bottom:.3rem;width:4.6rem;height:1.05rem;animation:tr 26s linear infinite}.rt svg{display:block;width:100%;height:100%;stroke:none}[dir=rtl] .rt svg{transform:scaleX(-1)}
+@keyframes tr{to{transform:translateX(calc(var(--d,1)*(100vw + 6rem)))}}
+@supports (width:1cqw){.rail{container-type:inline-size}@keyframes tr{to{transform:translateX(calc(var(--d,1)*(100cqw + 6rem)))}}}
 .pd{flex:none;display:inline-block;width:.55rem;height:.55rem;border-radius:50%;background:#34d399;animation:pl 1.8s infinite}@keyframes pl{0%{box-shadow:0 0 0 0 #34d39999}80%,100%{box-shadow:0 0 0 .6rem #34d39900}}
 .upd{display:flex;align-items:center;gap:.5rem;margin:.7rem .1rem .6rem;font-size:.76rem;font-weight:600;color:var(--mu)}.upd .ic{width:1rem;height:1rem;color:var(--rd)}.upd.bad{color:var(--rd)}.upd .pd{margin-inline-end:.2rem}
 
