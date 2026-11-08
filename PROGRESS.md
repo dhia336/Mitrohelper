@@ -119,3 +119,4 @@ Status v0.34: tram fix + prediction done, untested in production. SW cache `mh35
 - Deploy to STAGING first: `node tools/admin-setup.mjs --put --env staging`, `migrate_v14.sql` on the test project, `npx wrangler deploy --env staging`, check `/admin` on a phone and a laptop.
 - `wrangler.toml` now has a `[[rules]]` block so `worker/admin.html` is bundled as text; it worked in `wrangler dev` 4.158. If `wrangler deploy` complains on your version, send me the exact message.
 - Optional later: Telegram/email alert after 5 failed logins, daily stats digest.
+44. **CSP console message on /admin** (`img-src` blocked `/favicon.ico`): the browser auto-requests the favicon and the admin CSP only allows `data:` images. Harmless; fixed with `<link rel="icon" href="data:,">` in `worker/admin.html` (no request is made). Not re-tested in a browser after the one-line change.
