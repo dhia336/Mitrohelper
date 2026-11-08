@@ -1,4 +1,4 @@
-// v0.35 admin backend. Disabled (404) unless ALL THREE secrets exist: ADMIN_PASSWORD_HASH, ADMIN_TOTP_SECRET, ADMIN_SESSION_SECRET.
+// v0.35 admin backend (v0.36: filters on /recent, scored /suspects, /device profile, actions ok/unok/undo_votes). Disabled (404) unless ALL THREE secrets exist: ADMIN_PASSWORD_HASH, ADMIN_TOTP_SECRET, ADMIN_SESSION_SECRET.
 // Create them with `node tools/admin-setup.mjs` (see README "Admin page"). Nothing here is reachable cross-origin: no CORS headers at all.
 import PAGE from './admin.html';
 
@@ -111,15 +111,28 @@ export async function adminRoute(req, env, ctx, u, sb) {
   if (req.method === 'GET') {
     if (sub === 'ping') return ok({ r: 'ok' });
     if (sub === 'stats') return ok(await sb('rpc/admin_stats', {}));
-    if (sub === 'recent') { const line = u.searchParams.get('line'); return ok(await sb('rpc/admin_recent', { p_limit: 80, p_line: /^[0-9A-Za-z]{1,6}$/.test(line || '') ? line : null })); }
+    if (sub === 'recent') { // v0.36 filters: every value is validated here AND bound as a function argument in SQL (no string building)
+      const q = u.searchParams, g = k => (q.get(k) || '').trim(), n = (k, lo, hi) => { const v = g(k); return /^\d{1,10}$/.test(v) && +v >= lo && +v <= hi ? +v : null; };
+      const line = g('line'), dev = g('dev'), st = g('status'), dir = g('dir'), station = g('station').slice(0, 40);
+      return ok(await sb('rpc/admin_recent', {
+        p_limit: n('limit', 1, 200) || 80,
+        p_line: /^[0-9A-Za-z]{1,6}$/.test(line) ? line : null,
+        p_dir: dir === 'a' || dir === 'b' ? dir : null,
+        p_status: ['hidden', 'rejected', 'confirmed', 'paused', 'banned', 'flagged'].includes(st) ? st : null,
+        p_dev: /^[A-Za-z0-9_-]{4,64}$/.test(dev) ? dev : null,
+        p_hours: n('hours', 1, 2160),
+        p_before: n('before', 1, 9e15),
+        p_station: station.length >= 2 ? station : null }));
+    }
     if (sub === 'incidents') return ok(await sb('rpc/admin_incidents', {}));
-    if (sub === 'suspects') return ok(await sb('rpc/admin_suspects', {}));
+    if (sub === 'suspects') { const d = +(u.searchParams.get('days') || 7); return ok(await sb('rpc/admin_suspects', { p_days: Number.isInteger(d) && d >= 1 && d <= 30 ? d : 7 })); }
+    if (sub === 'device') { const k = u.searchParams.get('k') || ''; if (!KEY.test(k)) return R({ r: 'bad' }, 400); return ok(await sb('rpc/admin_device', { p_k: k })); }
     if (sub === 'banned') return ok(await sb('rpc/admin_banned', {}));
     if (sub === 'log') return ok(await sb('rpc/admin_log_list', { p_limit: 80 }));
   }
   if (sub === 'act' && req.method === 'POST') {
     const b = await req.json().catch(() => ({}));
-    if (!['del_sighting', 'del_incident', 'ban', 'unban', 'purge_dev'].includes(b.a)) return R({ r: 'bad' }, 400);
+    if (!['del_sighting', 'del_incident', 'ban', 'unban', 'purge_dev', 'ok', 'unok', 'undo_votes'].includes(b.a)) return R({ r: 'bad' }, 400);
     const id = Number.isInteger(b.id) && b.id > 0 ? b.id : null, k = typeof b.k === 'string' && KEY.test(b.k) ? b.k : null;
     if ((b.a.startsWith('del_') && !id) || (!b.a.startsWith('del_') && !k)) return R({ r: 'bad' }, 400);
     const r = await sb('rpc/admin_act', { p_act: b.a, p_id: id, p_k: k, p_note: typeof b.note === 'string' ? b.note.slice(0, 200) : null, p_ip: ik });

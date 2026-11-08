@@ -173,3 +173,8 @@ html.lenis,html.lenis body{height:auto}.lenis.lenis-smooth{scroll-behavior:auto!
 #inst:empty{display:none}
 
 .ty{display:flex;align-items:center;gap:.4rem;margin-top:.4rem;font-size:.82rem;color:var(--ink)}.ty .ic{width:1rem;height:1rem;flex:none}.ty.u{font-size:.74rem;color:var(--mu);margin-top:.2rem}.ty.late{color:#a55a00}:root[data-theme=dark] .ty.late{color:#f0b35c}
+
+/* v0.36 voted state + current line in the jump bar */
+.vt button.on{background:rgba(18,163,90,.16);border-color:#12a35a}.vt [data-v="-1"].on,.vt [data-iv="-1"].on{background:rgba(229,72,77,.14);border-color:var(--rd)}
+.vt button.dn{opacity:.5}.vt button.on,.vt button.dn{pointer-events:none}
+.lj.cur .b{box-shadow:0 0 0 2px var(--bg,#fff),0 0 0 4px var(--c)}.lj.cur small{font-weight:900}

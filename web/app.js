@@ -52,22 +52,26 @@ async function send(p,b){for(let i=0;i<2;i++){if(C.TS&&!tok)await Promise.race([
 function setLang(l){lang=localStorage.lang=l;document.documentElement.lang=l;document.documentElement.dir=l=='ar'?'rtl':'ltr';
  document.querySelectorAll('[data-g]').forEach(b=>b.classList.toggle('on',b.dataset.g==l));
  $('#cT').textContent=t('cta');$('#cS').textContent=t('stp');document.querySelector('.hq').setAttribute('aria-label',t('hwt'));document.title='MitroHelper';seen=0;render();sheet()}
+// v0.36 voted state: remembered per sighting/alert (1, -1, or 0 = server said already voted), newest 400 kept
+let VD={};try{VD=JSON.parse(localStorage.vd||'{}')}catch(_){}
+const vsave=()=>{try{const k=Object.keys(VD);if(k.length>400)k.slice(0,k.length-400).forEach(x=>delete VD[x]);localStorage.vd=JSON.stringify(VD)}catch(_){}},vc=(k,v)=>k in VD?(VD[k]===v?'on':'dn'):'';
 function render(){
  const v=$('#v');v.classList.toggle('noani',!!seen);document.body.dataset.tab=tab;hh();
  if(!lines.length){v.innerHTML='<div class="sk"></div>'.repeat(4);return}
  const html=`<div class="hero"><img src="img/hero.webp" alt="" fetchpriority="high"><button class="shr hs lbb" data-lb>${IC('trophy')}${t('lbt')}</button><button class="shr hs" data-share aria-label="${t('shb')}">${SHI}</button><div class="hc"><span class="chip"><i class="pd"></i>${cnt!=null?cnt:lv.filter(x=>mins(x.seen_at)<ST).length} ${t('n45')}</span>${li.length?`<span class="chip warn">${IC('alert')}${li.length} ${t('hw')}</span>`:''}<h2>${t('tg')}</h2></div><div class="rail" aria-hidden="true"><i class="rl"></i><span class="rt" style="animation-delay:-${(Date.now()/1000%26).toFixed(2)}s"><svg viewBox="0 0 132 30" aria-hidden="true"><path d="M58 9 64 2h10l6 7M62 3.2h14" stroke="#fff" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" fill="none"/><path d="M5 25V13a5 5 0 015-5h104c9 0 15 6 17 17z" fill="#fff"/><path d="M5 20h126v5H5z" fill="#0a7a45"/><g fill="#12261b"><rect x="11" y="11.5" width="13" height="6.5" rx="1.5"/><rect x="28" y="11.5" width="13" height="6.5" rx="1.5"/><rect x="45" y="11.5" width="13" height="6.5" rx="1.5"/><rect x="82" y="11.5" width="13" height="6.5" rx="1.5"/><rect x="99" y="11.5" width="9" height="6.5" rx="1.5"/><path d="M113 11.5h7c3 0 6 2.5 7.500 6.500H113z"/><circle cx="21" cy="26" r="3.2"/><circle cx="48" cy="26" r="3.2"/><circle cx="90" cy="26" r="3.2"/><circle cx="116" cy="26" r="3.2"/></g><rect x="63" y="10" width="14" height="14" rx="1.5" fill="#d3e6dc"/><path d="M70 10v14" stroke="#12261b" stroke-width="1" fill="none"/></svg></span></div></div>`+`<div class="upd" id="upd"></div><div class="jb">${lines.map(l=>{const m=fm(l.id),k=m!=null&&m<ST;return `<button class="lj ${k?fz(m):'f0'}" data-j="${l.id}" aria-label="${LN(l.id)}${k?', '+agoX(m):''}" style="--c:${l.color};--ct:${fg(l.color)}"><span class="b${bc(l.id)}">${l.id}</span><small>${k?m:'–'}</small>${li.some(x=>x.line_id==l.id)?'<i class="wd"></i>':''}</button>`}).join('')}</div>`+lines.map((l,i)=>{
   const e=ends(l.id),ss=byLine(l.id);
-  const inc=li.filter(x=>x.line_id==l.id).map(x=>`<div class="al"><div class="dt">${IC('alert','pulse')}<b>${t('hw')}</b><span class="mu">${t('lc')}: ${agoX(mins(x.last_at||x.seen_at))}</span></div><div class="st">${stn(x.station_id)}</div><div class="vt"><button data-iv="1" data-id="${x.id}">${t('still')}<b>${x.up}</b></button><button data-iv="-1" data-id="${x.id}">${t('run')}<b>${x.down}</b></button></div></div>`).join('');
-  const one=x=>{const m=mins(x.seen_at),o=m>=ST;return `<div class="tn ${fz(m)}${o?' old':''}"><div class="sr"><b class="sn">${stn(x.station_id)}</b><span class="tm"><i class="pd"></i>${agoX(m)}</span></div>`+(o?'':`<div class="fr"><b style="--w:${Math.max(4,100-m*100/ST)}%"></b></div><div class="vt"><button data-v="1" data-id="${x.id}" aria-label="${t('conf')}">${IC('check')}${x.up}</button><button data-v="-1" data-id="${x.id}" aria-label="${t('rej')}">${IC('x')}${x.down}</button></div>`)+`</div>`};
+  const inc=li.filter(x=>x.line_id==l.id).map(x=>`<div class="al"><div class="dt">${IC('alert','pulse')}<b>${t('hw')}</b><span class="mu">${t('lc')}: ${agoX(mins(x.last_at||x.seen_at))}</span></div><div class="st">${stn(x.station_id)}</div><div class="vt"><button data-iv="1" data-id="${x.id}" class="${vc('i'+x.id,1)}">${t('still')}<b>${x.up}</b></button><button data-iv="-1" data-id="${x.id}" class="${vc('i'+x.id,-1)}">${t('run')}<b>${x.down}</b></button></div></div>`).join('');
+  const one=x=>{const m=mins(x.seen_at),o=m>=ST;return `<div class="tn ${fz(m)}${o?' old':''}"><div class="sr"><b class="sn">${stn(x.station_id)}</b><span class="tm"><i class="pd"></i>${agoX(m)}</span></div>`+(o?'':`<div class="fr"><b style="--w:${Math.max(4,100-m*100/ST)}%"></b></div><div class="vt"><button data-v="1" data-id="${x.id}" class="${vc('s'+x.id,1)}" aria-pressed="${VD['s'+x.id]===1}" aria-label="${t('conf')}">${IC('check')}${x.up}</button><button data-v="-1" data-id="${x.id}" class="${vc('s'+x.id,-1)}" aria-pressed="${VD['s'+x.id]===-1}" aria-label="${t('rej')}">${IC('x')}${x.down}</button></div>`)+`</div>`};
   const pred=(lid,d,k)=>{const g=tyG(lid,d);if(!g)return'';const x=k[0],m=x?mins(x.seen_at):null,r=s=>String(s).replace(/\.0$/,'');let h;if(x&&m<ST){if(m>g.b)h=`<div class="ty late">${IC('clock')}${t('tyl')}</div>`;else h=`<div class="ty">${IC('clock')}${t('tyn').replace('{s}',stn(x.station_id)).replace('{a}',Math.max(0,Math.round(g.a-m))).replace('{b}',Math.max(1,Math.round(g.b-m)))}</div>`}else h='';return h+`<div class="ty u">${t('tyu').replace('{a}',r(Math.round(g.a))).replace('{b}',r(Math.round(g.m)))}</div>`};
   const rows=['a','b'].map(d=>{const k=trains(l.id,d);return `<div class="dr"><div class="dt"><i class="dg">${ARW(d)}</i><span><span class="to">${t('to')}</span> ${nm(e[d])}</span></div>`+(k.length?k.map(one).join(''):`<div class="st mu">${t('none')}</div>`)+pred(l.id,d,k)+`</div>`}).join('');
   const tk=trk(l.id),tr=ss.map(s=>{const h=tk.filter(z=>z.station_id==s.id),b=li.some(z=>z.station_id==s.id),f=h.some(z=>mins(z.seen_at)<ST);return `<li class="${b?'bad':f?'hit':''}"><i class="dot"></i><span class="nm">${nm(s)}</span>${b||h.length?`<span class="cp">${b?`<em class="w">${IC('alert')}${t('hw')}</em>`:''}${h.map(z=>{const m=mins(z.seen_at),a=`${t('to')} ${nm(e[z.dir])}, ${agoX(m)}`;return `<em class="${m>=ST?'old':''}" title="${a}" aria-label="${a}">${ARW(z.dir)}${durX(m)}</em>`}).join('')}</span>`:''}</li>`}).join('');
   return `<section id="l${l.id}" class="card" style="--c:${l.color};--ct:${fg(l.color)};--bt:${fgOld(l.color)};--i:${i}"><div class="hd"><span class="b${bc(l.id)}">${l.id}</span><div><div class="ti">${LN(l.id)}</div><div class="mu sm">${nm(ss[0])} ${SW} ${nm(ss[ss.length-1])}</div></div></div>${inc}${rows}<div class="tk"><div><ol class="sl">${tr}</ol></div></div></section>`}).join('')+`<p class="ft">${t('dis')}</p>`;
+ // v0.36: new cards are inserted BEFORE the old ones are removed (page never gets short = no scroll clamp to the top after a vote) + scroll restore
  // v0.35: keep the hero (and its running tram animation + image) alive across refreshes; only the chips and everything below it are replaced
  const old=v.querySelector(':scope>.hero');
- if(old&&v.dataset.hl==lang){const tp=document.createElement('template');tp.innerHTML=html;const nh=tp.content.querySelector('.hero');old.querySelector('.hc').replaceWith(nh.querySelector('.hc'));nh.remove();while(old.nextSibling)old.nextSibling.remove();old.after(tp.content)}
+ if(old&&v.dataset.hl==lang){const tp=document.createElement('template');tp.innerHTML=html;const nh=tp.content.querySelector('.hero');old.querySelector('.hc').replaceWith(nh.querySelector('.hc'));nh.remove();const y=scrollY,gone=[];for(let n=old.nextSibling;n;n=n.nextSibling)gone.push(n);old.after(tp.content);gone.forEach(n=>n.remove());if(scrollY!==y){lz?lz.scrollTo(y,{immediate:true,force:true}):scrollTo(0,y)}}
  else{v.innerHTML=html;v.dataset.hl=lang}
- upd();
+ upd();spy();
  seen=1}
 function sheet(){const w=$('#sh'),p=$('#pan');w.classList.toggle('on',!!S.on);if(!S.on)return;p.dataset.m=S.mode;
  if(S.mode=='lb'){p.innerHTML=lbHTML();return}
@@ -81,7 +85,14 @@ function sheet(){const w=$('#sh'),p=$('#pan');w.classList.toggle('on',!!S.on);if
  p.innerHTML=h;const k=p.querySelector('.pk.last');if(k)k.scrollIntoView({block:'center'})}
 function finish(r){if(r=='ok'){if(S.l&&S.s){try{const o=LAST()||{};localStorage.lastRep=JSON.stringify({l:S.l,s:S.s,d:S.d||o.d||''})}catch(_){}}try{localStorage.nrep=(+localStorage.nrep||0)+1}catch(_){}S.done=1;sheet();setTimeout(()=>{const e=document.querySelector('.ok svg');if(e&&window.fx){const r=e.getBoundingClientRect();fx.confetti(r.left+r.width/2,r.top+r.height/2)}},500);tab='metro';seen=0;refresh();setTimeout(()=>{S={};sheet()},3500)}else{toast(r=='slow'?t('slow'):r=='blocked'?t('blk'):er(r));S={};sheet()}}
 document.addEventListener('click',async e=>{const g=s=>e.target.closest(s);let b;
- if(b=g('[data-v],[data-iv]')){buzz();const r=await post(b.dataset.iv?'/ivote':'/vote',{id:+b.dataset.id,v:+(b.dataset.iv||b.dataset.v)});if(r=='dup')toast(t('dup'));else if(r!='ok')toast(r=='slow'?t('slow'):r=='blocked'?t('blk'):er(r));refresh()}
+ if(b=g('[data-v],[data-iv]')){buzz();const inc=!!b.dataset.iv,id=+b.dataset.id,v=+(b.dataset.iv||b.dataset.v),k=(inc?'i':'s')+id;
+  if(k in VD){toast(t('dup'));return}
+  const it=(inc?li:lv).find(z=>z.id==id),bump=d=>{if(it){it[v==1?'up':'down']+=d;sig='';tick()}};
+  VD[k]=v;vsave();bump(1); // instant feedback: highlight + count, scroll position is kept by render()
+  const r=await post(inc?'/ivote':'/vote',{id,v});
+  if(r=='ok'){}else if(r=='dup'){VD[k]=0;vsave();bump(-1);toast(t('dup'))}
+  else{delete VD[k];vsave();bump(-1);toast(r=='slow'?t('slow'):r=='blocked'?t('blk'):er(r))}
+  refresh()}
  else if(b=g('[data-t]')){buzz();const x=b.dataset.t;if(x=='rep'||x=='stop'){S={on:1,step:1,mode:x};ts();sheet()}}
  else if(b=g('[data-g]'))setLang(b.dataset.g);
  else if(b=g('[data-lb]')){buzz();S={on:1,mode:'lb',p:'week'};loadLb()}
@@ -96,6 +107,10 @@ document.addEventListener('click',async e=>{const g=s=>e.target.closest(s);let b
  else if(b=g('[data-s]')){buzz();S.s=+b.dataset.s;if(S.mode=='stop')finish(await send('/incident',{station:S.s}));else{S.step=3;sheet()}}
  else if(g('[data-bk]')){S.step--;sheet()}
  else if(b=g('[data-d]')){buzz();S.d=b.dataset.d;finish(await send('/report',{station:S.s,dir:b.dataset.d}))}});
+
+// v0.36 jump bar highlights the line currently in view (passive scroll, rAF-throttled; re-applied after every render)
+let spyQ=0;function spy(){const bar=document.querySelector('.jb');if(!bar)return;const top=document.querySelector('header').offsetHeight+bar.offsetHeight+24;let cur='';for(const c of document.querySelectorAll('section.card')){if(c.getBoundingClientRect().top<=top)cur=c.id.slice(1);else break}bar.querySelectorAll('.lj').forEach(b=>b.classList.toggle('cur',b.dataset.j==cur))}
+addEventListener('scroll',()=>{if(!spyQ)spyQ=requestAnimationFrame(()=>{spyQ=0;spy()})},{passive:true});
 let sig='';const sg=()=>JSON.stringify([lv,li,cnt])+lv.concat(li).map(x=>mins(x.last_at||x.seen_at)).join();
 function tick(){if(tab!='metro')return;const g=sg();if(g!==sig){sig=g;render()}} // re-render only if data or any 'min ago' changed
 // v0.29 leaderboard: generated nicknames (server sends word indexes, no user text), weekly/last week/30 days, cached in localStorage so it shows instantly and offline

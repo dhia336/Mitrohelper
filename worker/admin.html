@@ -20,6 +20,21 @@ table{width:100%;border-collapse:collapse;font-size:.88rem}th,td{text-align:star
 .fl{display:inline-block;border-radius:6px;padding:0 .4rem;margin-inline-end:.2rem;font-size:.75rem;border:1px solid var(--ln)}.fl.r{color:var(--rd);border-color:var(--rd)}.fl.a{color:var(--am);border-color:var(--am)}
 code{color:var(--mu);cursor:pointer}.mu{color:var(--mu)}.row{display:flex;gap:.5rem;flex-wrap:wrap;align-items:center;margin-bottom:.6rem}.hide{display:none}
 .toast{position:fixed;bottom:1rem;inset-inline:1rem;margin:auto;max-width:360px;background:var(--ac);color:#06210f;border-radius:10px;padding:.6rem 1rem;text-align:center;font-weight:700}.toast.e{background:var(--rd);color:#fff}
+
+.bar{position:sticky;top:var(--hh,3rem);z-index:4;background:var(--bg);padding:.5rem 0 .2rem;margin-bottom:.4rem;border-bottom:1px solid var(--ln)}
+.seg{display:flex;flex-wrap:wrap;gap:.3rem;margin-bottom:.5rem}.seg button{padding:.25rem .65rem;font-size:.85rem}.seg button.on{background:var(--c,var(--ac));border-color:var(--c,var(--ac));color:#06210f}
+.bar select,.bar input{padding:.3rem .55rem;font-size:.88rem}.cb{display:inline-flex;gap:.3rem;align-items:center;font-size:.88rem;color:var(--mu)}.cb input{width:auto}
+tr.sel td{background:#34d39914}th input,td input[type=checkbox]{width:1.1rem;height:1.1rem;padding:0}
+button.dv{padding:.1rem .45rem;font:inherit;font-size:.82rem;color:var(--mu);border-style:dashed}
+.tg{display:inline-block;border:1px solid var(--ln);border-radius:999px;padding:.05rem .55rem;margin:0 .2rem .2rem 0;font-size:.78rem;background:none;color:var(--mu);cursor:default}
+button.tg{cursor:pointer;padding:.2rem .65rem;font-size:.82rem}.tg.on{color:#06210f;border-color:transparent}
+.tg.rejected.on,.tg.downvoted.on{background:#f87171}.tg.busy.on{background:#fbbf24}.tg.hopper.on{background:#c084fc}.tg.repeat.on{background:#60a5fa}.tg.downvoter.on{background:#fb923c}
+.sc{display:inline-block;min-width:2rem;text-align:center;border-radius:8px;padding:.1rem .4rem;font-weight:800;color:#06210f}.sc.s1{background:#fde68a}.sc.s2{background:#fb923c}.sc.s3{background:#f87171}
+details.box summary{cursor:pointer;color:var(--mu)}details.box ul{margin:.5rem 0 0;padding-inline-start:1.2rem;line-height:1.7}
+.ov{position:fixed;inset:0;z-index:20;background:#000b;display:flex;justify-content:flex-end}.dw{width:min(620px,100%);height:100%;overflow:auto;background:var(--bg);padding:1rem;border-inline-start:1px solid var(--ln)}
+
+.k.sm b{font-size:1.05rem}.seg button[style*="--c"]{border-bottom:3px solid var(--c)}.seg button[style*="--c"].on{border-bottom-color:#06210f}
+@media(max-width:700px){header{position:static;flex-wrap:nowrap;overflow-x:auto}header button,header b{flex:none}.bar{position:static}.hm{display:none}main{padding:.7rem}}
 </style></head><body>
 <div id="app"></div>
 <script nonce="__NONCE__">
@@ -34,7 +49,7 @@ const ago=d=>{if(!d)return'—';const m=Math.round((Date.now()-new Date(d))/6e4)
 const tm=d=>new Date(d).toLocaleString([], {month:'short',day:'numeric',hour:'2-digit',minute:'2-digit'});
 const sh=k=>k?k.slice(0,8)+'…':'';
 const copy=k=>h('code',{title:k+' (click to copy)',onclick:()=>navigator.clipboard&&navigator.clipboard.writeText(k).then(()=>toast('Copied'))},sh(k));
-const LC={};let tab='ov',timer,idle=Date.now();
+const LC={'1':'#ff4d5e','2':'#ffa31a','3':'#1fd1b0','4':'#3b82f6','5':'#a855f7','6':'#ec4899','TGM':'#84cc16'};let tab='ov',timer,idle=Date.now();
 ['click','keydown','touchstart'].forEach(e=>addEventListener(e,()=>idle=Date.now(),{passive:true}));
 
 function lock(msg){clearInterval(timer);app.replaceChildren(loginView(msg))}
@@ -44,14 +59,15 @@ function loginView(msg){const pw=h('input',{type:'password',placeholder:'Passwor
  otp.addEventListener('keydown',e=>{if(e.key=='Enter')go()});pw.addEventListener('keydown',e=>{if(e.key=='Enter')otp.focus()});
  return h('div',{class:'login'},h('h1',null,'MitroHelper admin'),pw,otp,h('button',{class:'on',onclick:go},'Sign in'),er)}
 
-async function start(){app.replaceChildren(shell());await show();timer=setInterval(()=>{if(document.hidden)return;if(Date.now()-idle>25*6e4)return;if(tab=='ov')show(true)},6e4)}
+const setHH=()=>{const e=document.querySelector('header');if(e)document.documentElement.style.setProperty('--hh',e.offsetHeight+'px')};addEventListener('resize',setHH);
+async function start(){app.replaceChildren(shell());setHH();await show();timer=setInterval(()=>{if(document.hidden)return;if(Date.now()-idle>25*6e4)return;if(tab=='ov')show(true)},6e4)}
 function shell(){const t=(id,l)=>h('button',{'data-t':id,class:id==tab?'on':'',onclick:()=>{tab=id;document.querySelectorAll('header [data-t]').forEach(b=>b.classList.toggle('on',b.dataset.t==id));show()}},l);
  return h('div',null,h('header',null,h('b',null,'MitroHelper admin'),t('ov','Overview'),t('mod','Moderate'),t('sus','Suspects'),t('ban','Banned'),t('log','Log'),
   h('button',{onclick:()=>show()},'Refresh'),h('button',{onclick:async()=>{await api('logout',{});lock('Signed out.')}},'Sign out')),h('main',{id:'m'}))}
 
 async function show(quiet){const m=$('#m');if(!m)return;try{const f={ov:ov,mod:mod,sus:sus,ban:ban,log:logv}[tab];const el=await f();m.replaceChildren(el)}catch(e){if(e.message!='auth'&&!quiet)toast('Error loading',1)}}
 const get=async p=>{const r=await api(p);if(r.s!=200)throw new Error('http');return r.j};
-async function act(a,o,msg){if(msg&&!confirm(msg))return;const r=await api('act',{a,...o});toast(r.j.r=='ok'?'Done':r.j.r=='nf'?'Not found (already gone)':'Failed',r.j.r!='ok'&&r.j.r!='nf');show()}
+async function act(a,o,msg){if(msg&&!confirm(msg))return;const r=await api('act',{a,...o});toast(r.j.r=='ok'?'Done':r.j.r=='nf'?'Not found (already gone)':'Failed',r.j.r!='ok'&&r.j.r!='nf');await show();return r.j.r=='ok'||r.j.r=='nf'}
 const kpi=(l,v,c)=>h('div',{class:'k '+(c||'')},h('small',null,l),h('b',null,v??0));
 const lineBadge=(l,c)=>h('span',{class:'ln',style:'background:'+(/^#[0-9a-f]{3,8}$/i.test(c||'')?c:'#555')},l);
 const tbl=(heads,rows)=>h('div',{class:'box'},h('table',null,h('tr',null,heads.map(x=>h('th',null,x))),rows.length?rows:h('tr',null,h('td',{class:'mu'},'Nothing here'))));
@@ -74,25 +90,111 @@ async function ov(){const s=await get('stats');s.lines.forEach(l=>LC[l.line]=l.c
   h('h2',null,'Where visitors come from (30 d, ?src= tag)'),tbl(['Source','Devices','Came back'],s.src.map(x=>h('tr',null,h('td',null,x.src),h('td',null,x.devices),h('td',null,x.came_back)))),
   h('p',{class:'mu'},'Updated '+tm(s.now)+' · auto-refreshes every minute while this tab is open and you are active.'))}
 
-let lineF='';
-async function mod(){const [rc,ic]=await Promise.all([get('recent'+(lineF?'?line='+encodeURIComponent(lineF):'')),get('incidents')]);
- const flags=r=>[r.hidden&&h('span',{class:'fl a'},'hidden'),r.paused&&h('span',{class:'fl a'},'paused'),r.banned&&h('span',{class:'fl r'},'banned')];
- const sel=h('select',{onchange:e=>{lineF=e.target.value;show()}},h('option',{value:''},'All lines'),['1','2','3','4','5','6','TGM'].map(l=>h('option',{value:l,selected:l==lineF},'Line '+l)));
- return h('div',null,h('div',{class:'row'},sel,h('span',{class:'mu'},'Deleting a sighting removes it for everybody immediately. Ban stops that device from posting.')),
-  h('h2',null,'Latest sightings'),tbl(['When','Line','Station','Dir','👍','👎','Flags','Device',''],rc.map(r=>h('tr',null,h('td',{title:tm(r.seen_at)},ago(r.seen_at)),h('td',null,lineBadge(r.line,LC[r.line])),h('td',null,r.station),h('td',null,r.dir=='a'?'→ last':'→ first'),h('td',null,r.up),h('td',null,r.down),h('td',null,flags(r)),h('td',null,copy(r.dev)),
-    h('td',null,h('button',{class:'sm dg',onclick:()=>act('del_sighting',{id:r.id,note:'sighting'},'Delete this sighting?')},'Delete'),' ',
-     !r.banned&&h('button',{class:'sm dg',onclick:()=>act('ban',{k:r.dev,note:'from sighting '+r.id},'Ban this device?')},'Ban device'),' ',
-     h('button',{class:'sm',onclick:()=>act('purge_dev',{k:r.dev,note:'purge'},'Delete ALL sightings and stop alerts of this device from the last 7 days?')},'Purge'))))),
-  h('h2',null,'Stop alerts (48 h)'),tbl(['When','Line','Station','Stopped','Running','Live','Device',''],ic.map(r=>h('tr',null,h('td',null,ago(r.seen_at)),h('td',null,lineBadge(r.line,LC[r.line])),h('td',null,r.station),h('td',null,r.up),h('td',null,r.down),h('td',null,r.live&&h('span',{class:'fl r'},'live')),h('td',null,copy(r.dev)),
-    h('td',null,h('button',{class:'sm dg',onclick:()=>act('del_incident',{id:r.id,note:'alert'},'Delete this stop alert?')},'Delete'),' ',!r.banned&&h('button',{class:'sm dg',onclick:()=>act('ban',{k:r.dev,note:'from alert '+r.id},'Ban this device?')},'Ban device'))))))}
+// ===== v0.36 Moderate: persistent filter bar, load more, bulk delete, device drawer =====
+const LINES=['1','2','3','4','5','6','TGM'],SEGS={
+ dir:[['','Both'],['a','→ last'],['b','→ first']],
+ status:[['','All'],['flagged','Flagged'],['hidden','Hidden'],['rejected','Has 👎'],['confirmed','Has 👍'],['paused','Paused'],['banned','Banned']],
+ hours:[['','Any time'],['1','1 h'],['6','6 h'],['24','24 h'],['168','7 d'],['720','30 d']]};
+let F={line:'',dir:'',status:'',hours:'',station:'',dev:''},modBox=null;
+try{Object.assign(F,JSON.parse(sessionStorage.mhF||'{}'))}catch{}
+const saveF=()=>{try{sessionStorage.mhF=JSON.stringify(F)}catch{}};
+const qs=o=>Object.entries(o).filter(([,v])=>v!==''&&v!=null).map(([k,v])=>k+'='+encodeURIComponent(v)).join('&');
+const flags=r=>[r.hidden&&h('span',{class:'fl a'},'hidden'),r.paused&&h('span',{class:'fl a'},'paused'),r.banned&&h('span',{class:'fl r'},'banned')];
+const dirT=d=>d=='a'?'→ last':'→ first';
+const devBtn=k=>h('button',{class:'dv',title:k+' (open profile)',onclick:()=>drawer(k)},sh(k));
 
-async function sus(){const s=await get('suspects');const bb=(k,w)=>h('button',{class:'sm dg',onclick:()=>act('ban',{k,note:'suspects'},w||'Ban this?')},'Ban');
- return h('div',null,h('p',{class:'mu'},'Devices are paused automatically when riders keep rejecting them (3 hidden in 24 h or 6 in 7 d). Review here, ban only when it is clearly abuse.'),
-  h('h2',null,'Often rejected by riders (7 d)'),tbl(['Device','Hidden','Total','Last','Status',''],s.rejected.map(r=>h('tr',null,h('td',null,copy(r.dev)),h('td',null,r.hidden),h('td',null,r.total),h('td',null,ago(r.last_seen)+' ago'),h('td',null,r.paused&&h('span',{class:'fl a'},'paused'),r.banned&&h('span',{class:'fl r'},'banned')),h('td',null,!r.banned&&bb(r.dev))))),
-  h('h2',null,'Very active (15+ reports in 24 h)'),tbl(['Device','Reports','First','Last',''],s.busy.map(r=>h('tr',null,h('td',null,copy(r.dev)),h('td',null,r.reports),h('td',null,tm(r.first_at)),h('td',null,tm(r.last_at)),h('td',null,!r.banned&&bb(r.dev))))),
-  h('h2',null,'3+ different lines in one hour'),tbl(['Device','Hour','Lines','Reports',''],s.hoppers.map(r=>h('tr',null,h('td',null,copy(r.dev)),h('td',null,tm(r.hr)),h('td',null,r.line_count),h('td',null,r.reports),h('td',null,bb(r.dev))))),
-  h('h2',null,'Many devices behind one network (24 h)'),h('p',{class:'mu'},'Mobile carriers share one address between many riders. Do NOT ban these unless you are sure.'),
-  tbl(['Network hash','Devices','Reports',''],s.shared_ips.map(r=>h('tr',null,h('td',null,copy(r.ip)),h('td',null,r.devices),h('td',null,r.reports),h('td',null,!r.banned&&bb(r.ip,'Ban a whole network? This can block many innocent riders.'))))))}
+function buildMod(){
+ let rows=[],total=0,more=false;const sel=new Set();
+ const root=h('div'),sum=h('span',{class:'mu'}),res=h('div'),mbox=h('div',{class:'row'}),bulk=h('div',{class:'row hide'}),inc=h('div');
+ const seg=(key,opts)=>{const d=h('div',{class:'seg'},opts.map(([v,l,c])=>{const b=h('button',{'data-v':v,onclick:()=>{F[key]=v;paint();reload()}},l);if(c)b.style.setProperty('--c',c);return b}));d.dataset.k=key;return d};
+ const paint=()=>{root.querySelectorAll('.seg').forEach(d=>d.querySelectorAll('button').forEach(b=>b.classList.toggle('on',b.dataset.v===F[d.dataset.k])));saveF();reset.classList.toggle('hide',!Object.values(F).some(Boolean))};
+ let tmr;const txt=(key,ph,w)=>{const i=h('input',{placeholder:ph,value:F[key],style:'width:'+w,'aria-label':ph,oninput:e=>{F[key]=e.target.value.trim();saveF();clearTimeout(tmr);tmr=setTimeout(()=>{paint();reload()},350)}});return i};
+ const lineSeg=seg('line',[['','All lines'],...LINES.map(l=>[l,l,LC[l]])]),statusSel=h('select',{'aria-label':'Status',onchange:e=>{F.status=e.target.value;paint();reload()}},SEGS.status.map(([v,l])=>h('option',{value:v,selected:v===F.status},l)));
+ const hoursSel=h('select',{'aria-label':'Time',onchange:e=>{F.hours=e.target.value;paint();reload()}},SEGS.hours.map(([v,l])=>h('option',{value:v,selected:v===F.hours},l)));
+ const stIn=txt('station','Station…','9rem'),dvIn=txt('dev','Device / network prefix','11rem');
+ const reset=h('button',{class:'sm',onclick:()=>{F={line:'',dir:'',status:'',hours:'',station:'',dev:''};stIn.value=dvIn.value='';statusSel.value=hoursSel.value='';paint();reload()}},'Reset filters');
+ const bar=h('div',{class:'bar'},lineSeg,h('div',{class:'row'},seg('dir',SEGS.dir),statusSel,hoursSel,stIn,dvIn,reset));
+ const paintBulk=()=>{bulk.classList.toggle('hide',!sel.size);bulk.replaceChildren(h('b',null,sel.size+' selected'),h('button',{class:'sm dg',onclick:async()=>{if(!confirm('Delete '+sel.size+' sightings?'))return;let n=0;for(const id of [...sel]){const r=await api('act',{a:'del_sighting',id,note:'bulk'});if(r.j.r=='ok')n++}toast('Deleted '+n,n!=sel.size);sel.clear();reload()}},'Delete selected'),h('button',{class:'sm',onclick:()=>{sel.clear();paintRows()}},'Clear'))};
+ const paintRows=()=>{
+  const all=h('input',{type:'checkbox','aria-label':'Select all',checked:!!(rows.length&&rows.every(r=>sel.has(r.id))),onchange:e=>{rows.forEach(r=>e.target.checked?sel.add(r.id):sel.delete(r.id));paintRows()}});
+  res.replaceChildren(h('div',{class:'box'},h('table',null,h('tr',null,h('th',null,all),['When','Line','Station','Dir','👍','👎','Flags','Device',''].map((x,i)=>h('th',{class:i>=3&&i<=6?'hm':''},x))),
+   rows.length?rows.map(r=>h('tr',{class:sel.has(r.id)?'sel':''},h('td',null,h('input',{type:'checkbox','aria-label':'Select',checked:sel.has(r.id),onchange:e=>{e.target.checked?sel.add(r.id):sel.delete(r.id);paintRows()}})),
+    h('td',{title:tm(r.seen_at)},ago(r.seen_at)),h('td',null,lineBadge(r.line,LC[r.line])),h('td',null,r.station),h('td',{class:'hm'},dirT(r.dir)),h('td',{class:'hm'},r.up),h('td',{class:'hm'},r.down),h('td',{class:'hm'},flags(r)),h('td',null,devBtn(r.dev)),
+    h('td',null,h('button',{class:'sm dg',onclick:()=>act('del_sighting',{id:r.id,note:'sighting'},'Delete this sighting?')},'Delete'),' ',
+     !r.banned&&h('button',{class:'sm dg',onclick:()=>act('ban',{k:r.dev,note:'from sighting '+r.id},'Ban this device?')},'Ban'))))
+   :h('tr',null,h('td',{class:'mu',colspan:10},'No sightings match these filters.')))));
+  sum.textContent='Showing '+rows.length+' of '+total+(Object.entries(F).some(([k,v])=>v&&k!='')?' matching':'')+' sightings';
+  mbox.replaceChildren(more&&h('button',{onclick:()=>load(false)},'Load 80 more'));paintBulk()};
+ async function load(fresh){const j=await get('recent?'+qs({...F,before:fresh||!rows.length?'':rows[rows.length-1].id}));
+  if(!j||!Array.isArray(j.rows))throw new Error('http');rows=fresh?j.rows:rows.concat(j.rows);total=j.total;more=j.more;paintRows()}
+ async function loadInc(){const ic=(await get('incidents')).filter(r=>!F.line||r.line==F.line);
+  inc.replaceChildren(h('h2',null,'Stop alerts (48 h)'+(F.line?' · line '+F.line:'')),tbl(['When','Line','Station','Stopped','Running','Live','Device',''],ic.map(r=>h('tr',null,h('td',null,ago(r.seen_at)),h('td',null,lineBadge(r.line,LC[r.line])),h('td',null,r.station),h('td',null,r.up),h('td',null,r.down),h('td',null,r.live&&h('span',{class:'fl r'},'live')),h('td',null,devBtn(r.dev)),
+    h('td',null,h('button',{class:'sm dg',onclick:()=>act('del_incident',{id:r.id,note:'alert'},'Delete this stop alert?')},'Delete'),' ',!r.banned&&h('button',{class:'sm dg',onclick:()=>act('ban',{k:r.dev,note:'from alert '+r.id},'Ban this device?')},'Ban')))))) }
+ const reload=()=>{sel.clear();return Promise.all([load(true),loadInc()]).catch(()=>toast('Error loading',1))};
+ root.append(bar,h('div',{class:'row'},sum),bulk,res,mbox,inc);paint();
+ return{root,reload}}
+async function mod(){if(!modBox)modBox=buildMod();await modBox.reload();return modBox.root}
+
+// ---- device / network profile drawer ----
+function drawer(k){
+ const ov=h('div',{class:'ov',onclick:e=>{if(e.target===ov)close()}}),box=h('div',{class:'dw'},h('p',{class:'mu'},'Loading…')),esc=e=>{if(e.key=='Escape')close()};
+ function close(){ov.remove();removeEventListener('keydown',esc)}
+ ov.append(box);document.body.append(ov);addEventListener('keydown',esc);
+ const reopen=()=>{close();drawer(k)};
+ const dact=async(a,msg)=>{const r=await act(a,{k,note:'profile'},msg);if(r)reopen()};
+ get('device?k='+encodeURIComponent(k)).then(d=>{if(!d)throw 0;box.replaceChildren(devView(d,close,dact))}).catch(()=>box.replaceChildren(h('p',{class:'err'},'Could not load this profile.'),h('button',{onclick:close},'Close')))}
+function devView(d,close,dact){
+ const head=h('div',{class:'row'},h('h2',{style:'margin:0;flex:1'},(d.kind=='network'?'Network ':'Device ')+sh(d.k)),h('button',{onclick:close,'aria-label':'Close'},'✕'));
+ const full=h('p',{class:'mu',style:'word-break:break-all;margin:.2rem 0 .6rem'},d.k,' ',h('button',{class:'sm',onclick:()=>navigator.clipboard&&navigator.clipboard.writeText(d.k).then(()=>toast('Copied'))},'Copy'));
+ const st=h('div',{class:'row'},d.banned&&h('span',{class:'fl r'},'banned'),d.paused&&h('span',{class:'fl a'},'paused (auto)'),d.reviewed_at&&h('span',{class:'fl'},'marked OK '+ago(d.reviewed_at)+' ago'));
+ const A=[d.banned?h('button',{class:'sm',onclick:()=>dact('unban','Unban?')},'Unban'):h('button',{class:'sm dg',onclick:()=>dact('ban',d.kind=='network'?'Ban a whole network? This can block many innocent riders.':'Ban this device?')},'Ban')];
+ if(d.kind=='device')A.push(d.reviewed_at?h('button',{class:'sm',onclick:()=>dact('unok')},'Unmark OK'):h('button',{class:'sm',onclick:()=>dact('ok')},'Mark OK (hide from suspects)'),
+  h('button',{class:'sm dg',onclick:()=>dact('purge_dev','Delete ALL sightings and stop alerts of this device from the last 7 days?')},'Purge 7 d'),
+  h('button',{class:'sm dg',onclick:()=>dact('undo_votes','Remove this device\'s 👎 votes of the last 7 days and fix the counters on the sightings they hit?')},'Undo its 👎 (7 d)'),
+  h('button',{class:'sm',onclick:()=>{F={line:'',dir:'',status:'',hours:'',station:'',dev:d.k.slice(0,12)};saveF();modBox=null;tab='mod';close();document.querySelectorAll('header [data-t]').forEach(b=>b.classList.toggle('on',b.dataset.t=='mod'));show()}},'Show its sightings'));
+ const out=[head,full,st,h('div',{class:'row'},A)];
+ if(d.kind=='device'){
+  out.push(h('div',{class:'grid'},kpi('First seen',tm(d.first_seen),'sm'),kpi('Reports 30 d',d.total30),kpi('Hidden by riders',d.hidden30,d.hidden30?'w':''),kpi('👍 received',d.ups),kpi('👎 received',d.downs,d.downs>d.ups?'w':''),kpi('👍 given 30 d',d.vote_up),kpi('👎 given 30 d',d.vote_down,d.vote_down>=8&&d.vote_down>=3*Math.max(1,d.vote_up)?'w':''),kpi('Networks 7 d',d.networks)),
+   h('h2',null,'Lines used (30 d)'),h('div',{class:'row'},d.lines.map(l=>h('span',null,lineBadge(l.line,LC[l.line]),' ×'+l.n,'  '))),
+   h('h2',null,'Top stations (30 d)'),h('div',{class:'row'},d.stations.map(x=>h('span',{class:'fl'},x.name+' ×'+x.n))),
+   h('h2',null,'Latest sightings'),tbl(['When','Line','Station','Dir','👍','👎',''],d.recent.map(r=>h('tr',null,h('td',{title:tm(r.seen_at)},ago(r.seen_at)),h('td',null,lineBadge(r.line,LC[r.line])),h('td',null,r.station),h('td',null,dirT(r.dir)),h('td',null,r.up),h('td',null,r.down),
+    h('td',null,r.hidden&&h('span',{class:'fl a'},'hidden'),' ',h('button',{class:'sm dg',onclick:async()=>{if(confirm('Delete this sighting?')){const x=await act('del_sighting',{id:r.id,note:'profile'});if(x){close();drawer(d.k)}}}},'Delete'))))))}
+ else if(d.kind=='network')out.push(h('p',{class:'mu'},'Mobile carriers put many riders behind one address. Look at the devices before banning the network.'),
+  h('h2',null,'Devices on this network (7 d)'),tbl(['Device','Reports','Hidden','Last',''],d.devices.map(r=>h('tr',null,h('td',null,devBtn(r.dev)),h('td',null,r.reports),h('td',null,r.hidden),h('td',null,ago(r.last_at)+' ago'),h('td',null,r.banned&&h('span',{class:'fl r'},'banned'))))))
+ else out.push(h('p',{class:'mu'},'No recent activity is stored for this key.'));
+ if(d.log&&d.log.length)out.push(h('h2',null,'Your actions on this key'),tbl(['When','Action','Note'],d.log.map(r=>h('tr',null,h('td',null,tm(r.at)),h('td',null,r.act),h('td',null,r.note)))));
+ return h('div',null,out)}
+
+// ===== v0.36 Suspects: one ranked list (score + reasons), client-side filters, reviewed list =====
+const WHY={rejected:'riders hid some of its sightings',downvoted:'its sightings got many 👎 and few 👍',busy:'15+ reports in 24 h',hopper:'3+ different lines within one hour',repeat:'5+ reports at one station and direction, none confirmed',downvoter:'casts many 👎 and almost no 👍'};
+let SD=7,SF={why:new Set(),min:0,hideBan:true,hideRev:true,hidePaused:false,dev:''},susData=null,susBox=null;
+function buildSus(){
+ const root=h('div'),res=h('div'),net=h('div');
+ const rep=()=>paint();
+ const win=h('select',{'aria-label':'Window',onchange:async e=>{SD=+e.target.value;try{susData=await get('suspects?days='+SD);paint()}catch{toast('Error loading',1)}}},[[1,'Last 24 h'],[7,'Last 7 days'],[30,'Last 30 days']].map(([v,l])=>h('option',{value:v,selected:v===SD},l)));
+ const min=h('select',{'aria-label':'Minimum score',onchange:e=>{SF.min=+e.target.value;rep()}},[[0,'Any score'],[4,'Score 4+'],[8,'Score 8+'],[15,'Score 15+']].map(([v,l])=>h('option',{value:v},l)));
+ const chips=Object.keys(WHY).map(k=>h('button',{class:'tg '+k,title:WHY[k],'data-k':k,onclick:e=>{SF.why.has(k)?SF.why.delete(k):SF.why.add(k);rep()}},k));
+ const cb=(lab,key)=>h('label',{class:'cb'},h('input',{type:'checkbox',checked:SF[key],onchange:e=>{SF[key]=e.target.checked;rep()}}),lab);
+ const q=h('input',{placeholder:'Device prefix',style:'width:9rem','aria-label':'Device prefix',oninput:e=>{SF.dev=e.target.value.trim();rep()}});
+ const legend=h('details',{class:'box'},h('summary',null,'How the score works'),h('ul',null,Object.entries(WHY).map(([k,v])=>h('li',null,h('span',{class:'tg '+k},k),' ',v)),h('li',null,'Score adds up: rejected 5 per hidden sighting (max 25), downvoted 3, busy 2+, hopper 6, repeat 4, downvoter 4. A network shared by 5+ devices is shown as a note, not scored.'),h('li',null,'"Mark OK" hides a device until riders hide another of its sightings.')));
+ function paint(){
+  chips.forEach(c=>c.classList.toggle('on',SF.why.has(c.dataset.k)));
+  const all=susData.devices,f=all.filter(r=>(SF.min<=r.score)&&(!SF.why.size||r.reasons.some(x=>SF.why.has(x)))&&!(SF.hideBan&&r.banned)&&!(SF.hideRev&&r.reviewed)&&!(SF.hidePaused&&r.paused)&&(!SF.dev||r.dev.startsWith(SF.dev)));
+  res.replaceChildren(h('p',{class:'mu'},f.length+' of '+all.length+' scored devices shown'+(all.length>=80?' (top 80)':'')),
+   tbl(['Score','Device','Why','Reports','Hidden','👍/👎 got','👎 given','Lines','Last','Status',''],f.map(r=>h('tr',null,
+    h('td',null,h('span',{class:'sc '+(r.score>=10?'s3':r.score>=5?'s2':'s1')},r.score)),h('td',null,devBtn(r.dev)),
+    h('td',null,r.reasons.map(x=>h('span',{class:'tg on '+x,title:WHY[x]},x))),
+    h('td',{title:'total in window / last 24 h'},r.total+' / '+r.r24),h('td',null,r.hidden),h('td',null,r.ups+' / '+r.downs),h('td',null,r.vdown),h('td',null,r.lines),h('td',null,r.last_at?ago(r.last_at)+' ago':'—'),
+    h('td',null,r.paused&&h('span',{class:'fl a'},'paused'),r.banned&&h('span',{class:'fl r'},'banned'),r.reviewed&&h('span',{class:'fl'},'OK'),r.net_devs>=5&&h('span',{class:'fl',title:r.net_devs+' devices share its network'},'shared net')),
+    h('td',null,h('button',{class:'sm',onclick:()=>drawer(r.dev)},'Profile'),' ',
+     r.reviewed?h('button',{class:'sm',onclick:()=>act('unok',{k:r.dev,note:'suspects'})},'Unmark'):h('button',{class:'sm',onclick:()=>act('ok',{k:r.dev,note:'suspects'})},'OK'),' ',
+     !r.banned&&h('button',{class:'sm dg',onclick:()=>act('ban',{k:r.dev,note:'suspects'},'Ban this device?')},'Ban'))))));
+  net.replaceChildren(h('h2',null,'Many devices behind one network (24 h)'),h('p',{class:'mu'},'Mobile carriers share one address between many riders. Do NOT ban these unless you are sure.'),
+   tbl(['Network','Devices','Reports',''],susData.shared_ips.map(r=>h('tr',null,h('td',null,devBtn(r.ip)),h('td',null,r.devices),h('td',null,r.reports),h('td',null,r.banned&&h('span',{class:'fl r'},'banned'))))))}
+ root.append(h('p',{class:'mu'},'Devices are paused automatically when riders keep rejecting them (3 hidden in 24 h or 6 in 7 d). Review here, ban only when it is clearly abuse.'),
+  h('div',{class:'bar'},h('div',{class:'row'},win,min,q,cb('Hide banned','hideBan'),cb('Hide reviewed (OK)','hideRev'),cb('Hide paused','hidePaused')),h('div',{class:'row'},chips)),legend,res,net);
+ return{root,paint}}
+async function sus(){susData=await get('suspects?days='+SD);if(!susBox)susBox=buildSus();susBox.paint();return susBox.root}
 
 async function ban(){const b=await get('banned');return h('div',null,h('h2',null,'Banned devices / networks'),tbl(['Key','Last seen','Reports 30 d',''],b.map(r=>h('tr',null,h('td',null,copy(r.k)),h('td',null,r.last_seen?ago(r.last_seen)+' ago':'never'),h('td',null,r.reports30),h('td',null,h('button',{class:'sm',onclick:()=>act('unban',{k:r.k,note:'unban'},'Unban?')},'Unban'))))))}
 async function logv(){const l=await get('log');return h('div',null,h('h2',null,'Moderation log (latest 80)'),tbl(['When','Action','Target','Note'],l.map(r=>h('tr',null,h('td',null,tm(r.at)),h('td',null,r.act),h('td',null,copy(r.target)),h('td',null,r.note)))))}
