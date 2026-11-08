@@ -178,12 +178,3 @@ html.lenis,html.lenis body{height:auto}.lenis.lenis-smooth{scroll-behavior:auto!
 .vt button.on{background:rgba(18,163,90,.16);border-color:#12a35a}.vt [data-v="-1"].on,.vt [data-iv="-1"].on{background:rgba(229,72,77,.14);border-color:var(--rd)}
 .vt button.dn{opacity:.5}.vt button.on,.vt button.dn{pointer-events:none}
 .lj.cur .b{box-shadow:0 0 0 2px var(--bg,#fff),0 0 0 4px var(--c)}.lj.cur small{font-weight:900}
-
-/* v0.37 interchange chips on the thanks screen */
-.sibs{display:grid;gap:.5rem;justify-items:center;margin-top:1rem}.sibs small{color:var(--mu,#6b7f75);font-weight:700}
-.sibs>div{display:flex;flex-wrap:wrap;gap:.5rem;justify-content:center}
-.sib{display:inline-flex;align-items:center;gap:.5rem;min-height:2.8rem;padding:0 1rem 0 .5rem;border:2px solid var(--c);border-radius:var(--r1);background:none;color:inherit;font-weight:800}
-.sib .b{min-width:2rem;height:1.9rem;display:inline-grid;place-items:center;border-radius:.45rem;background:var(--c);color:var(--ct)}
-
-/* v0.38 opposite-direction chip */
-.sib.dr .aw{width:1.1rem;height:1.1rem;stroke:currentColor;fill:none;stroke-width:3}
