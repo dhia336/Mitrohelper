@@ -2,6 +2,7 @@
 Crowd-sourced live sightings for Tunis light metro (lines 1-6). 3 taps to report; live board per line/direction; ar/fr/en; installable PWA. Free stack, no build step.
 
 ## Layout
+- `worker/admin.js` + `worker/admin.html` admin backend + page (v0.35, see 'Admin page' below) · `tools/admin-setup.mjs` one-time secret generator · `supabase/migrate_v14.sql` admin tables/functions (also appended to `schema.sql`)
 - `web/robots.txt` + `web/sitemap.xml` SEO files (canonical URL = the workers.dev address, see PROGRESS 27) · `web/fx.js` theme toggle + tap animations (ripple, vote bursts, confetti, jump flash) · `web/icons/logo.svg` the ONE logo (header `<img>`, tab favicon; `192.png`/`512.png` are renders of it) · `web/index.html` shell · `web/style.css` mobile-first styles · `web/app.js` UI, i18n, polling (20s), voting · `web/config.js` Supabase URL+anon key
 - `supabase/update_stations.sql`/`update_colors.sql` migrations for existing DBs · `web/sw.js` offline shell cache · `web/manifest.webmanifest` + `web/icons/` install-as-app
 - `supabase/migrate_v12.sql` leaderboard functions (`nick`, `lb_range`, `lb_scores`, `leaderboard`, `my_stats`) · `supabase/migrate_v11.sql` visits table + `hit()`/`my_stats()` (retention, see PROGRESS 29; retention queries at the bottom of `admin_queries.sql`) · `supabase/migrate_v5.sql` stop-report rules · `supabase/migrate_v4.sql` live_all() + rate-limit indexes · `supabase/schema.sql` tables, RLS, `report()`/`vote()` functions, seed data
@@ -95,3 +96,19 @@ Moderation: insert a device id or `md5(ip)` into table `banned`.
 
 ## v0.31: look and icons
 Station-signage design (PROGRESS 32): coloured sign band per line card, departure-board line bar with minutes since the last sighting, hero tram on a rail. Icons are an inline SVG sprite at the top of `web/index.html`; use `IC('name')` in app.js, add a `<symbol id="i-name">` to add one. No web font (system stack) to keep first paint fast; how to add one is in PROGRESS 32.
+
+
+## Prediction (v0.34, untested on production)
+`typical_gaps()` (migrate_v13.sql) learns, from the last 21 days of sightings, the gap between consecutive sightings at the same station and direction, per line/direction and bucket (weekday/weekend x 6-9, 9-16, 16-20, other). `GET /api/typ` (edge-cached 10 min) serves it; the client (`tyG`, `pred` in app.js) shows "Next at X: in A-B min" and "Usually every A-B min (estimate)" only when a bucket has n>=12 and >=3 distinct days (else all-day bucket, else nothing). `line_regimes(line_id, since)` makes a line ignore data before a schedule change (line 4: 2026-11-04). Kill switch: `CFG.PREDICT=false` in web/config.js. Gaps are biased upward (unreported trains), so A = p25 and B = median are shown.
+
+## Admin page (v0.35, `/admin`)
+Statistics + moderation for the owner only. Disabled (answers 404) until all three secrets exist.
+**Setup (once):** `node tools/admin-setup.mjs --put` (add `--env staging` for the test copy). It asks for a password (16+ chars, hidden input), stores `ADMIN_PASSWORD_HASH`, `ADMIN_TOTP_SECRET`, `ADMIN_SESSION_SECRET` with `wrangler secret put` and prints the authenticator key ONCE (add it to an authenticator app). Then run `supabase/migrate_v14.sql` (SQL first), `npx wrangler deploy`, open `https://<your-worker>/admin`. Re-running the script rotates everything and signs out all sessions.
+**Security model (each layer independent):**
+- Login = password (PBKDF2-SHA256, 100000 iterations, the Workers maximum) **and** a 6-digit authenticator code (RFC 6238). Both are always checked, the error is always the generic `Login failed`. A code works only once (`admin_otp_used`).
+- 5 failed logins per network in 15 min -> locked (HTTP 429, table `admin_fails`); if the database errors the lock fails CLOSED.
+- Session = HMAC-signed cookie (`__Host-` prefix, `HttpOnly`, `Secure`, `SameSite=Strict`), 30 min idle (sliding), 8 h hard limit, bound to the browser's user-agent. Stateless: to kill every session at once re-run the setup script (new session secret).
+- CSRF/cross-site: no CORS headers on admin routes, every request needs header `x-mh-admin: 1`, POSTs must carry `Origin` = the site itself, `Sec-Fetch-Site` must be same-origin.
+- Page: strict CSP (nonce script, no external resources, `frame-ancestors 'none'`), `no-store`, `noindex`; all data is inserted with `textContent` (no HTML injection from reports). The service worker never caches `/admin`.
+- Database: all `admin_*` functions are `security definer`, callable by `service_role` only (explicitly revoked from `anon`/`authenticated`); the tables have RLS on with no policies. Every moderation action is written to `admin_log`.
+**Screens:** Overview (reports 24h/7d/30d, reporters, visitors, new, installed app, live, alerts, hidden/paused/banned, 14-day chart, hour-of-day chart, per-line table with last sighting, top stations, `?src=` sources) · Moderate (latest 80 sightings + stop alerts: delete, ban device, purge a device's last 7 days; line filter) · Suspects (rejected / very active / line-hopping devices, shared networks) · Banned (unban) · Log. Deleting or banning clears the edge cache of `/api/live` and the leaderboards, so riders see it within seconds.

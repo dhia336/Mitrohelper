@@ -2,6 +2,11 @@ name = "mitrohelper"
 main = "worker/index.js"
 compatibility_date = "2026-10-01"
 
+[[rules]]
+type = "Text"
+globs = ["**/*.html"]
+fallthrough = true
+
 [assets]
 directory = "./web"
 binding = "ASSETS"
@@ -9,7 +14,7 @@ binding = "ASSETS"
 [vars]
 SUPABASE_URL = "https://pxbekofgpogrootrnowq.supabase.co"
 ALLOWED_ORIGIN = "https://mitrohelper.dhia336.workers.dev"
-# Secrets (NOT here): SUPABASE_SERVICE_KEY, CRON_KEY, TURNSTILE_SECRET
+# Secrets (NOT here): SUPABASE_SERVICE_KEY, CRON_KEY, TURNSTILE_SECRET, and for /admin: ADMIN_PASSWORD_HASH, ADMIN_TOTP_SECRET, ADMIN_SESSION_SECRET (node tools/admin-setup.mjs)
 
 # ---- TEST COPY (see README 'Testing before deploying') ----
 # npx wrangler dev --env staging      -> runs on http://localhost:8787 against the TEST Supabase project

@@ -48,3 +48,11 @@ from sightings where seen_at>now()-interval '24 hours' group by ip having count(
 --  (select count(*) from sightings x where x.dev=s.dev and x.seen_at>=(select f from r) and x.down>0) downvoted,
 --  (select count(distinct y.dev) from sightings y where y.dev<>s.dev and y.seen_at>=(select f from r) and y.ip in (select z.ip from sightings z where z.dev=s.dev and z.seen_at>=(select f from r))) other_devs_same_ip
 -- from s order by s.points desc;
+
+-- v0.34: detect a structural break (schedule change) per line: median gap and sightings per Tunis day. A sudden step = add/update line_regimes.
+select st.line_id, (s.seen_at at time zone 'Africa/Tunis')::date d, count(*) sightings
+from sightings s join stations st on st.id=s.station_id where s.down-s.up<2 and s.seen_at>now()-interval '30 days' group by 1,2 order by 1,2;
+-- current prediction table and regimes
+select * from line_regimes;
+select r->>'l' line, r->>'d' dir, r->>'k' bucket, r->>'n' n, r->>'dy' days, r->>'a' p25, r->>'m' median, r->>'b' p75 from json_array_elements(typical_gaps()->'rows') r order by 1,2,3;
+-- backtest idea (run after ~2 weeks): for each (station,dir) compare each real gap with the bucket median; report mean abs error vs naive "always 10 min".

@@ -1,8 +1,13 @@
 // ONE Worker = website (web/ via the ASSETS binding) + API (/api/*). The only thing allowed to write to Supabase.
 // Plain vars live in wrangler.toml (SUPABASE_URL, ALLOWED_ORIGIN). Secrets (set once): SUPABASE_SERVICE_KEY, CRON_KEY, TURNSTILE_SECRET (optional).
+import{adminRoute}from'./admin.js';
 const int=x=>Number.isInteger(x)&&x>0&&x<1e12, devOk=d=>typeof d=='string'&&d.length>=16&&d.length<=64;
 export default{async fetch(req,env,ctx){
  const u=new URL(req.url),p=u.pathname;
+ if(p=='/admin'||p=='/admin/'||p.startsWith('/api/admin/')){ // v0.35 admin: own auth, own headers, NO cors (see worker/admin.js)
+  const ah={apikey:env.SUPABASE_SERVICE_KEY,Authorization:'Bearer '+env.SUPABASE_SERVICE_KEY,'Content-Type':'application/json'};
+  const asb=async(path,body)=>(await fetch(env.SUPABASE_URL+'/rest/v1/'+path,{method:'POST',headers:ah,body:JSON.stringify(body||{})})).json();
+  return adminRoute(req,env,ctx,u,asb).catch(e=>{console.log('admin error',String(e));return new Response('{"r":"err"}',{status:500,headers:{'content-type':'application/json','cache-control':'no-store'}})})}
  if(!p.startsWith('/api/'))return env.ASSETS.fetch(req); // everything else = the website files (web/)
  const o=req.headers.get('origin')||'',al=(env.ALLOWED_ORIGIN||'*').split(',').map(s=>s.trim());
  const cors={'access-control-allow-origin':al.includes('*')?'*':al.includes(o)?o:al[0],'access-control-allow-headers':'content-type','access-control-allow-methods':'GET,POST,OPTIONS',vary:'origin'};
@@ -16,6 +21,8 @@ export default{async fetch(req,env,ctx){
   if(req.method=='GET'&&p=='/api/data')return cached(req,300,async()=>{const[lines,stations]=await Promise.all([sb('lines?select=*&order=sort'),sb('stations?select=*&order=line_id,pos')]);return{lines,stations}});
   if(req.method=='GET'&&p=='/api/live')return cached(liveKey,20,async()=>{let r=await sb('rpc/live_all',{}); // one query (migrate_v4.sql); fallback to 2 queries if the function is not installed yet
    if(!r||!Array.isArray(r.s)){const[s,i]=await Promise.all([sb('live?select=*'),sb('live_incidents?select=*')]);if(!Array.isArray(s))throw 0;r={s,i}}r.t=Date.now();return r});
+  if(req.method=='GET'&&p=='/api/typ'){ // v0.34 typical headways, edge-cached 10 min
+   return cached(new Request(u.origin+'/api/typ'),600,async()=>{const r=await sb('rpc/typical_gaps',{});if(!r||!Array.isArray(r.rows))throw 0;return r})}
   if(req.method=='GET'&&p=='/api/lb'){const per=['week','last','month'].includes(u.searchParams.get('p'))?u.searchParams.get('p'):'week'; // v0.29 public top 10 (no device ids), edge-cached 60s per period
    return cached(new Request(u.origin+'/api/lb?p='+per),60,async()=>{const r=await sb('rpc/leaderboard',{p_period:per});if(!r||!Array.isArray(r.rows))throw 0;return r})}
   if(p=='/api/cron'){if(!env.CRON_KEY||req.headers.get('x-cron-key')!==env.CRON_KEY)return J({r:'denied'},403);return J({r:'ok',purged:await sb('rpc/purge_old',{})})}

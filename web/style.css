@@ -171,3 +171,5 @@ small.mu{display:block;font-weight:700;font-size:.9rem}
 html.lenis,html.lenis body{height:auto}.lenis.lenis-smooth{scroll-behavior:auto!important}.lenis.lenis-smooth [data-lenis-prevent]{overscroll-behavior:contain}.lenis.lenis-stopped{overflow:clip}
 @media(prefers-reduced-motion:reduce){*,::before,::after{animation:none!important;transition:none!important}.rp,#fx{display:none}.rt{display:none}}
 #inst:empty{display:none}
+
+.ty{display:flex;align-items:center;gap:.4rem;margin-top:.4rem;font-size:.82rem;color:var(--ink)}.ty .ic{width:1rem;height:1rem;flex:none}.ty.u{font-size:.74rem;color:var(--mu);margin-top:.2rem}.ty.late{color:#a55a00}:root[data-theme=dark] .ty.late{color:#f0b35c}
