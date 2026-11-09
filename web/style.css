@@ -178,3 +178,8 @@ html.lenis,html.lenis body{height:auto}.lenis.lenis-smooth{scroll-behavior:auto!
 .vt button.on{background:rgba(18,163,90,.16);border-color:#12a35a}.vt [data-v="-1"].on,.vt [data-iv="-1"].on{background:rgba(229,72,77,.14);border-color:var(--rd)}
 .vt button.dn{opacity:.5}.vt button.on,.vt button.dn{pointer-events:none}
 .lj.cur .b{box-shadow:0 0 0 2px var(--bg,#fff),0 0 0 4px var(--c)}.lj.cur small{font-weight:900}
+
+/* v0.40 what's new */
+.hq .nd{position:absolute;top:.22rem;inset-inline-end:.22rem;width:.55rem;height:.55rem;border-radius:50%;background:var(--ye);box-shadow:0 0 0 1.5px var(--gr)}
+.how .nw{margin:0 0 1.2rem;padding:.9rem 1rem;border-radius:var(--r2);background:color-mix(in srgb,var(--gr) 10%,transparent);border:1px solid color-mix(in srgb,var(--gr) 30%,transparent)}
+.how .nw h3{margin:0 0 .7rem;font-size:.78rem;font-weight:800;text-transform:uppercase;letter-spacing:.07em;color:var(--gr)}.how .nw ul{margin:0}

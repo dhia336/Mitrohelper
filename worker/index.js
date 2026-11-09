@@ -19,7 +19,7 @@ export default{async fetch(req,env,ctx){
  try{
   if(req.method=='OPTIONS')return new Response(null,{headers:cors});
   if(req.method=='GET'&&p=='/api/data')return cached(req,300,async()=>{const[lines,stations]=await Promise.all([sb('lines?select=*&order=sort'),sb('stations?select=*&order=line_id,pos')]);return{lines,stations}});
-  if(req.method=='GET'&&p=='/api/live')return cached(liveKey,20,async()=>{let r=await sb('rpc/live_all',{}); // one query (migrate_v4.sql); fallback to 2 queries if the function is not installed yet
+  if(req.method=='GET'&&p=='/api/live')return cached(liveKey,20,async()=>{let r=await sb('rpc/live_all',{}); // one query (supabase/archive/migrate_v4.sql, included in schema.sql); fallback to 2 queries if the function is not installed yet
    if(!r||!Array.isArray(r.s)){const[s,i]=await Promise.all([sb('live?select=*'),sb('live_incidents?select=*')]);if(!Array.isArray(s))throw 0;r={s,i}}r.t=Date.now();return r});
   if(req.method=='GET'&&p=='/api/typ'){ // v0.34 typical headways, edge-cached 10 min
    return cached(new Request(u.origin+'/api/typ'),600,async()=>{const r=await sb('rpc/typical_gaps',{});if(!r||!Array.isArray(r.rows))throw 0;return r})}
