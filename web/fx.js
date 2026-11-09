@@ -6,7 +6,7 @@ const stored=()=>{try{const v=localStorage.theme;return v==='light'||v==='dark'?
 // ---- theme: default = system; the toggle stores an explicit choice ----
 const setT=v=>{H.dataset.theme=v};
 mq.addEventListener&&mq.addEventListener('change',()=>{if(!stored())setT(mq.matches?'dark':'light')});
-const LBL={ar:'تبديل الوضع الفاتح / الداكن',fr:'Changer de thème',en:'Switch theme'},lab=()=>{const b=document.querySelector('.tg');if(b){const l=LBL[H.lang]||LBL.en;b.setAttribute('aria-label',l);b.title=l}};
+const LBL={ar:'بدّل الوضع (فاتح / داكن)',fr:'Changer de thème',en:'Switch theme'},lab=()=>{const b=document.querySelector('.tg');if(b){const l=LBL[H.lang]||LBL.en;b.setAttribute('aria-label',l);b.title=l}};
 lab();new MutationObserver(lab).observe(H,{attributes:true,attributeFilter:['lang']});
 document.addEventListener('click',e=>{
   const b=e.target.closest('.tg');if(!b)return;
