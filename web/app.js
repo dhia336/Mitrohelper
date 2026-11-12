@@ -50,6 +50,9 @@ function ts(){if(!C.TS)return;tok='';tsE='';tsI=0;tsP=1;
  const go=()=>{tsL=0;try{if(tid!=null)turnstile.reset(tid);else tid=turnstile.render('#tsw',{sitekey:C.TS,appearance:'interaction-only','retry-interval':4000,
   callback:x=>{tok=x;tsE='';tsP=0},'expired-callback':()=>{tok=''},'error-callback':c=>{tsE='ts-e'+c;return true},'timeout-callback':()=>{tsE='ts-timeout'},'before-interactive-callback':()=>{tsI=1}})}catch(_){tsE='ts-js';tsP=0}};
  if(window.turnstile)go();else if(!tsL){tsL=1;const s=document.createElement('script');s.src='https://challenges.cloudflare.com/turnstile/v0/api.js?render=explicit';s.async=true;s.onload=go;s.onerror=()=>{tsL=0;tsE='ts-blocked';tsP=0;s.remove()};document.head.appendChild(s)}}
+addEventListener('keydown',e=>{if(e.key=='Escape'&&S.on){S={};sheet()}}); // v0.44: Esc closes the open sheet (desktop)
+// v0.43 pre-warm: start the token on the FIRST touch/scroll/key (not on CTA tap), so it is usually ready before the rider finishes the 3 taps.
+if(C.TS){const w=()=>{if(!tok&&!tsP)ts()};['pointerdown','touchstart','scroll','keydown'].forEach(e=>addEventListener(e,w,{once:true,passive:true}))}
 // v0.42: never post an empty token. Waits for the CAPTCHA token (15 s, 45 s once a visible challenge is shown), shows 'Checking...' after 1.2 s,
 // and if there is still no token fails with the real reason in lastC (ts-blocked = script blocked, ts-e<code> = widget error, ts-timeout, ts-js); retries once if the server rejects a token.
 async function send(p,b){for(let i=0;i<2;i++){if(C.TS){if(!tok&&!tsP)ts();const t0=Date.now();let sh=0;
@@ -105,7 +108,7 @@ document.addEventListener('click',async e=>{const g=s=>e.target.closest(s);let b
   if(r=='ok'){}else if(r=='dup'){VD[k]=0;vsave();bump(-1);toast(t('dup'))}
   else{delete VD[k];vsave();bump(-1);toast(r=='slow'?t('slow'):r=='blocked'?t('blk'):er(r))}
   refresh()}
- else if(b=g('[data-t]')){buzz();const x=b.dataset.t;if(x=='rep'||x=='stop'){S={on:1,step:1,mode:x};ts();sheet()}}
+ else if(b=g('[data-t]')){buzz();const x=b.dataset.t;if(x=='rep'||x=='stop'){S={on:1,step:1,mode:x};if(!tok&&!tsP)ts();sheet()}}
  else if(b=g('[data-g]'))setLang(b.dataset.g);
  else if(b=g('[data-lb]')){buzz();S={on:1,mode:'lb',p:'week'};loadLb()}
  else if(b=g('[data-lp]')){S.p=b.dataset.lp;loadLb()}
