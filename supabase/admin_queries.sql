@@ -56,3 +56,8 @@ from sightings s join stations st on st.id=s.station_id where s.down-s.up<2 and 
 select * from line_regimes;
 select r->>'l' line, r->>'d' dir, r->>'k' bucket, r->>'n' n, r->>'dy' days, r->>'a' p25, r->>'m' median, r->>'b' p75 from json_array_elements(typical_gaps()->'rows') r order by 1,2,3;
 -- backtest idea (run after ~2 weeks): for each (station,dir) compare each real gap with the bucket median; report mean abs error vs naive "always 10 min".
+
+-- 9) v0.45 messages from riders (newest unread first). Mark as read afterwards with the update below.
+select id, created_at, kind, lang, ctx, msg from feedback where not done order by id desc limit 50;
+-- update feedback set done=true where id in (/* ids */);
+-- Delete old read ones: delete from feedback where done and created_at<now()-interval '180 days';

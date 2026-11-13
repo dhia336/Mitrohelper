@@ -35,9 +35,10 @@ export default{async fetch(req,env,ctx){
   if(p=='/api/report'&&int(b.station)&&(b.dir=='a'||b.dir=='b')){fn='report';args={...base,p_station:b.station,p_dir:b.dir};human=true}
   else if(p=='/api/incident'&&int(b.station)){fn='report_incident';args={...base,p_station:b.station};human=true}
   else if((p=='/api/vote'||p=='/api/ivote')&&int(b.id)&&(b.v==1||b.v==-1)){fn=p=='/api/vote'?'vote':'vote_incident';args={...base,p_id:b.id,p_v:b.v}}
+  else if(p=='/api/feedback'&&['idea','bug','other'].includes(b.kind)&&typeof b.msg=='string'&&b.msg.trim().length>=5&&b.msg.length<=1000){fn='send_feedback';args={...base,p_kind:b.kind,p_msg:b.msg,p_lang:['ar','fr','en'].includes(b.lang)?b.lang:'',p_ctx:typeof b.ctx=='string'&&/^[\w .:x-]{0,60}$/.test(b.ctx)?b.ctx:''};human=true} // v0.45
   else return J({r:'bad'},400);
   if(human&&env.TURNSTILE_SECRET){const f=new FormData();f.append('secret',env.TURNSTILE_SECRET);f.append('response',b.ts||'');f.append('remoteip',ip);
    const v=await(await fetch('https://challenges.cloudflare.com/turnstile/v0/siteverify',{method:'POST',body:f})).json();if(!v.success){console.log('turnstile rejected',JSON.stringify(v['error-codes']),'host',v.hostname);return J({r:'bot',c:v['error-codes']||[]},403)}}
-  const r=await sb('rpc/'+fn,args);if(r==='ok')ctx.waitUntil(caches.default.delete(liveKey));
+  const r=await sb('rpc/'+fn,args);if(r==='ok'&&fn!='send_feedback')ctx.waitUntil(caches.default.delete(liveKey));
   if(typeof r!='string'){console.log('rpc failed',fn,JSON.stringify(r).slice(0,300));return J({r:'db'},500)}return J({r});
  }catch(e){console.log('worker error',String(e));return J({r:'err'},500)}}};
