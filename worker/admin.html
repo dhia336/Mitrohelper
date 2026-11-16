@@ -100,6 +100,8 @@ details.box{padding:.7rem .9rem}details.box summary{cursor:pointer;color:var(--m
 @media(max-width:380px){.grid{grid-template-columns:1fr 1fr}.k{padding:.65rem .75rem}.k b{font-size:1.3rem}}
 .ftog{display:none}
 @media(max-width:720px){.ftog{display:flex;width:100%;justify-content:space-between;align-items:center;background:none;border:0;padding:.2rem .1rem;min-height:2.4rem;font-weight:800}.ftog::after{content:'▴';color:var(--mu)}.bar.cl .ftog::after{content:'▾'}.bar.cl .fb{display:none}.bar.cl{padding:.35rem .75rem}.bar:not(.cl) .fb{margin-top:.5rem}td:empty{display:none}}
+.nb{font-style:normal;background:var(--rd,#e5383b);color:#fff;border-radius:1rem;padding:0 .4rem;font-size:.72rem;font-weight:800;line-height:1.3rem;min-width:1.3rem;text-align:center}.fbc{padding:.8rem;margin-bottom:.6rem}.fbm{white-space:pre-wrap;overflow-wrap:anywhere;margin:.4rem 0 .6rem}.sm.on{background:var(--gr,#00793f);color:#fff;border-color:transparent}
+@media(max-width:720px){nav.tabs button{position:relative}nav.tabs .nb{position:absolute;top:.1rem;inset-inline-start:calc(50% + .2rem);line-height:1.1rem;min-width:1.1rem;font-size:.65rem}}
 </style></head><body>
 <div id="app"></div>
 <script nonce="__NONCE__">
@@ -107,7 +109,7 @@ details.box{padding:.7rem .9rem}details.box summary{cursor:pointer;color:var(--m
 const $=s=>document.querySelector(s),app=$('#app');
 const h=(t,a,...c)=>{const e=document.createElement(t);for(const k in a||{}){if(k=='class')e.className=a[k];else if(k.startsWith('on'))e.addEventListener(k.slice(2),a[k]);else if(a[k]===false||a[k]==null){}else e.setAttribute(k,a[k]===true?'':a[k])}for(const x of c.flat())if(x!=null&&x!==false)e.append(x.nodeType?x:document.createTextNode(String(x)));return e};
 const NS='http://www.w3.org/2000/svg',sv=(t,a,...c)=>{const e=document.createElementNS(NS,t);for(const k in a||{})e.setAttribute(k,a[k]);c.flat().forEach(x=>e.append(x));return e};
-const IC={ov:'M4 20V10M10 20V4M16 20v-7M22 20H2',mod:'M9 6h11M9 12h11M9 18h11M4 6l1 1 2-2M4 12l1 1 2-2M4 18l1 1 2-2',sus:'M12 3l10 18H2L12 3zM12 10v5M12 18h.01',ban:'M12 3a9 9 0 100 18 9 9 0 000-18zM5.6 5.6l12.8 12.8',log:'M5 4h14v16H5zM9 9h6M9 13h6M9 17h3',rf:'M20 11a8 8 0 10-2.3 5.7M20 4v7h-7',out:'M10 4H5v16h5M15 8l5 4-5 4M20 12H9',sun:'M12 8a4 4 0 100 8 4 4 0 000-8zM12 2v2M12 20v2M2 12h2M20 12h2M4.9 4.9l1.4 1.4M17.7 17.7l1.4 1.4M4.9 19.1l1.4-1.4M17.7 6.3l1.4-1.4',moon:'M20 14.5A8 8 0 019.5 4 8 8 0 1020 14.5z',tram:'M7 3h10a2 2 0 012 2v10a2 2 0 01-2 2H7a2 2 0 01-2-2V5a2 2 0 012-2zM5 11h14M9 7h.01M15 7h.01M8 21l1.5-4M16 21l-1.5-4'};
+const IC={ov:'M4 20V10M10 20V4M16 20v-7M22 20H2',mod:'M9 6h11M9 12h11M9 18h11M4 6l1 1 2-2M4 12l1 1 2-2M4 18l1 1 2-2',sus:'M12 3l10 18H2L12 3zM12 10v5M12 18h.01',ban:'M12 3a9 9 0 100 18 9 9 0 000-18zM5.6 5.6l12.8 12.8',log:'M5 4h14v16H5zM9 9h6M9 13h6M9 17h3',fb:'M5 5h14a1 1 0 011 1v9a1 1 0 01-1 1h-7.5L7 19.5V16H5a1 1 0 01-1-1V6a1 1 0 011-1zM8 9.5h8M8 12.5h5',rf:'M20 11a8 8 0 10-2.3 5.7M20 4v7h-7',out:'M10 4H5v16h5M15 8l5 4-5 4M20 12H9',sun:'M12 8a4 4 0 100 8 4 4 0 000-8zM12 2v2M12 20v2M2 12h2M20 12h2M4.9 4.9l1.4 1.4M17.7 17.7l1.4 1.4M4.9 19.1l1.4-1.4M17.7 6.3l1.4-1.4',moon:'M20 14.5A8 8 0 019.5 4 8 8 0 1020 14.5z',tram:'M7 3h10a2 2 0 012 2v10a2 2 0 01-2 2H7a2 2 0 01-2-2V5a2 2 0 012-2zM5 11h14M9 7h.01M15 7h.01M8 21l1.5-4M16 21l-1.5-4'};
 const ic=n=>sv('svg',{viewBox:'0 0 24 24',fill:'none',stroke:'currentColor','stroke-width':2,'stroke-linecap':'round','stroke-linejoin':'round',class:'ic','aria-hidden':'true'},sv('path',{d:IC[n]}));
 const dark=()=>{const t=document.documentElement.dataset.theme;return t?t=='dark':matchMedia('(prefers-color-scheme:dark)').matches};
 try{if(localStorage.mhTheme)document.documentElement.dataset.theme=localStorage.mhTheme}catch{}
@@ -134,8 +136,8 @@ function loginView(msg){const pw=h('input',{type:'password',placeholder:'Passwor
  return h('div',{class:'login'},brand(),pw,otp,h('button',{class:'on',onclick:go},'Sign in'),er)}
 
 const setHH=()=>{const e=document.querySelector('header');if(e)document.documentElement.style.setProperty('--hh',e.offsetHeight+'px')};addEventListener('resize',setHH);
-async function start(){app.replaceChildren(shell());setHH();await show();timer=setInterval(()=>{if(document.hidden)return;if(Date.now()-idle>25*6e4)return;if(tab=='ov')show(true)},6e4)}
-function shell(){const T=[['ov','Overview'],['mod','Moderate'],['sus','Suspects'],['ban','Banned'],['log','Log']];
+async function start(){app.replaceChildren(shell());setHH();await show();get('feedback?show=new&limit=1').then(d=>setBadge(d.unread)).catch(()=>{});timer=setInterval(()=>{if(document.hidden)return;if(Date.now()-idle>25*6e4)return;if(tab=='ov')show(true)},6e4)}
+function shell(){const T=[['ov','Overview'],['mod','Moderate'],['fb','Messages'],['sus','Suspects'],['ban','Banned'],['log','Log']];
  const go=id=>{tab=id;document.querySelectorAll('[data-t]').forEach(b=>b.classList.toggle('on',b.dataset.t==id));const m=$('#m');if(m)m.replaceChildren(skel());scrollTo(0,0);show()};
  const th=h('button',{'aria-label':'Toggle theme',title:'Light / dark',onclick:()=>{setTheme(dark()?'light':'dark');th.replaceChildren(ic(dark()?'sun':'moon'))}},ic(dark()?'sun':'moon'));
  return h('div',null,h('header',null,brand(),
@@ -145,7 +147,7 @@ const fold=(bar,body,count)=>{const mob=matchMedia('(max-width:720px)').matches,
  bar.className='bar'+(mob?' cl':'');bar.append(tg,body);return n=>{tg.textContent='Filters'+(n?' · '+n+' active':'')}};
 const skel=()=>h('div',null,h('div',{class:'sk'}),h('div',{class:'sk'}),h('div',{class:'sk'}));
 
-async function show(quiet){const m=$('#m');if(!m)return;try{const f={ov:ov,mod:mod,sus:sus,ban:ban,log:logv}[tab];const el=await f(),y=scrollY;m.replaceChildren(el);if(scrollY!==y)scrollTo(0,y)}catch(e){if(e.message!='auth'&&!quiet)toast('Error loading',1)}}
+async function show(quiet){const m=$('#m');if(!m)return;try{const f={ov:ov,mod:mod,fb:fbv,sus:sus,ban:ban,log:logv}[tab];const el=await f(),y=scrollY;m.replaceChildren(el);if(scrollY!==y)scrollTo(0,y)}catch(e){if(e.message!='auth'&&!quiet)toast('Error loading',1)}}
 const get=async p=>{const r=await api(p);if(r.s!=200)throw new Error('http');return r.j};
 async function act(a,o,msg){if(msg&&!confirm(msg))return;const r=await api('act',{a,...o});toast(r.j.r=='ok'?'Done':r.j.r=='nf'?'Not found (already gone)':'Failed',r.j.r!='ok'&&r.j.r!='nf');await show();return r.j.r=='ok'||r.j.r=='nf'}
 const kpi=(l,v,c)=>h('div',{class:'k '+(c||'')},h('small',null,l),h('b',null,v??0));
@@ -279,6 +281,14 @@ function buildSus(){
  return{root,paint}}
 async function sus(){susData=await get('suspects?days='+SD);if(!susBox)susBox=buildSus();susBox.paint();return susBox.root}
 
+// v0.48 Messages tab: riders' feedback (text is inserted with textContent via h(), never as HTML)
+let fbShow='new';
+const setBadge=n=>{const b=document.querySelector('[data-t=fb]');if(!b)return;const o=b.querySelector('.nb');if(o)o.remove();if(n>0)b.append(h('i',{class:'nb'},String(n)))};
+async function fbAct(a,id,msg){if(msg&&!confirm(msg))return;const r=await api('fb',{a,id:id||undefined});toast(r.j.r=='ok'?'Done':r.j.r=='nf'?'Not found (already gone)':'Failed',r.j.r!='ok'&&r.j.r!='nf');await show()}
+async function fbv(){const d=await get('feedback?show='+fbShow);setBadge(d.unread);const KL={idea:'Idea',bug:'Problem',other:'Other'};
+ const seg=h('div',{class:'row'},['new','read','all'].map(x=>h('button',{class:'sm'+(x==fbShow?' on':''),onclick:()=>{fbShow=x;show()}},x=='new'?'Unread ('+d.unread+')':x=='read'?'Read':'All')),d.unread?h('button',{class:'sm',onclick:()=>fbAct('readall',0,'Mark all as read?')},'Mark all read'):'');
+ const cards=d.rows.map(r=>h('div',{class:'box fbc'},h('div',{class:'row'},h('b',null,KL[r.kind]||r.kind),h('span',{class:'mu'},(r.lang||'?')+' · '+ago(r.created_at)+' ago'+(r.ctx?' · '+r.ctx:''))),h('p',{class:'fbm',dir:'auto'},r.msg),h('div',{class:'row'},h('button',{class:'sm',onclick:()=>fbAct(r.done?'unread':'read',r.id)},r.done?'Mark unread':'Mark read'),h('button',{class:'sm dg',onclick:()=>fbAct('delete',r.id,'Delete this message?')},'Delete'))));
+ return h('div',null,h('h2',null,'Messages from riders'),seg,cards.length?cards:h('p',{class:'mu'},'Nothing here'))}
 async function ban(){const b=await get('banned');return h('div',null,h('h2',null,'Banned devices / networks'),tbl(['Key','Last seen','Reports 30 d',''],b.map(r=>h('tr',null,h('td',null,copy(r.k)),h('td',null,r.last_seen?ago(r.last_seen)+' ago':'never'),h('td',null,r.reports30),h('td',null,h('button',{class:'sm',onclick:()=>act('unban',{k:r.k,note:'unban'},'Unban?')},'Unban'))))))}
 async function logv(){const l=await get('log');return h('div',null,h('h2',null,'Moderation log (latest 80)'),tbl(['When','Action','Target','Note'],l.map(r=>h('tr',null,h('td',null,tm(r.at)),h('td',null,r.act),h('td',null,copy(r.target)),h('td',null,r.note)))))}
 

@@ -127,6 +127,8 @@ Station-signage design (PROGRESS 32): coloured sign band per line card, departur
 `typical_gaps()` (archive/migrate_v13.sql) learns, from the last 21 days of sightings, the gap between consecutive sightings at the same station and direction, per line/direction and bucket (weekday/weekend x 6-9, 9-16, 16-20, other). `GET /api/typ` (edge-cached 10 min) serves it; the client (`tyG`, `pred` in app.js) shows "Next at X: in A-B min" and "Usually every A-B min (estimate)" only when a bucket has n>=12 and >=3 distinct days (else all-day bucket, else nothing). `line_regimes(line_id, since)` makes a line ignore data before a schedule change (line 4: 2026-11-04). Kill switch: `CFG.PREDICT=false` in web/config.js. Gaps are biased upward (unreported trains), so A = p25 and B = median are shown.
 
 ## Admin page (v0.35, `/admin`)
+**v0.48: 'Messages' tab** shows the riders' feedback (unread badge, mark read/unread, delete). SQL `migrate_v20.sql`, routes `GET /api/admin/feedback`, `POST /api/admin/fb`. See PROGRESS 63.
+
 Statistics + moderation for the owner only. Disabled (answers 404) until all three secrets exist.
 **Setup (once):** `node tools/admin-setup.mjs --put` (add `--env staging` for the test copy). It asks for a password (16+ chars, hidden input), stores `ADMIN_PASSWORD_HASH`, `ADMIN_TOTP_SECRET`, `ADMIN_SESSION_SECRET` with `wrangler secret put` and prints the authenticator key ONCE (add it to an authenticator app). Then run `supabase/migrate_v14.sql` (SQL first), `npx wrangler deploy`, open `https://<your-worker>/admin`. Re-running the script rotates everything and signs out all sessions.
 **Security model (each layer independent):**
@@ -167,7 +169,7 @@ Client: no special UI (the one-tap 'toward X' button was removed in v0.39); ride
 **Cleanup:** deleted `supabase/update_stations.sql` (deleted every line, station and sighting; same data is in `schema.sql`) and `supabase/station_names_ar.sql` (superseded: its four extra Arabic names are now in `schema.sql`); moved migrate_v2..v13 and `prod_catchup_v4_to_v10.sql` to `supabase/archive/`; removed the unused `arr` helper and the unused translation key `lme` from app.js; README layout rewritten one line per file; older PROGRESS entries moved to `docs/PROGRESS_ARCHIVE.md`.
 
 ## v0.41: Tunisian Arabic improved
-Arabic UI text (`T.ar`, nickname words in `NKW`, theme button label in `web/fx.js`) rewritten from formal MSA / unnatural phrasing into clean everyday Tunisian: 22 dictionary entries changed (full old to new list in PROGRESS 55). Rules followed (same as the separate `tunisian-arabic` skill, delivered as `tunisian-arabic.skill`): negation `ما ... ش` (ما فماش, not "ما فما حتى"), `باش`/`موش`/`متاع`/`توّا`/`برشا`, `الأسبوع هذا` (never `جمعة`, which also means Friday), no MSA passive `تم`, no other-dialect words, no slang or vulgar words. SEO title/meta in `index.html` stay MSA on purpose (people search in MSA). Placeholders ({s}, {a}, {b}, {n}, {y}) are unchanged. `sw.js` is mh47 (v0.46).
+Arabic UI text (`T.ar`, nickname words in `NKW`, theme button label in `web/fx.js`) rewritten from formal MSA / unnatural phrasing into clean everyday Tunisian: 22 dictionary entries changed (full old to new list in PROGRESS 55). Rules followed (same as the separate `tunisian-arabic` skill, delivered as `tunisian-arabic.skill`): negation `ما ... ش` (ما فماش, not "ما فما حتى"), `باش`/`موش`/`متاع`/`توّا`/`برشا`, `الأسبوع هذا` (never `جمعة`, which also means Friday), no MSA passive `تم`, no other-dialect words, no slang or vulgar words. SEO title/meta in `index.html` stay MSA on purpose (people search in MSA). Placeholders ({s}, {a}, {b}, {n}, {y}) are unchanged. `sw.js` is mh49 (v0.49).
 
 ## v0.42: CAPTCHA token handling (`web/app.js`)
 Toast `[bot: missing-input-response]` = the browser sent NO Turnstile token (server and keys are fine). `ts()` loads/renders the invisible Turnstile widget on the first touch/scroll of the page (v0.43 pre-warm; the report button only starts it if no token exists); `send()` waits for the token (15 s, 45 s if a visible challenge appears), never posts an empty one, and on failure shows 'Could not verify you are human...' with a client code: `[bot: ts-blocked]` script blocked/not loaded, `[bot: ts-e<n>]` widget error (Cloudflare client error number), `[bot: ts-timeout]` no token in time, `[bot: ts-js]` render exception. Codes without `ts-` come from the server's siteverify. Details, causes and phone checklist: PROGRESS 57.
@@ -175,6 +177,12 @@ Toast `[bot: missing-input-response]` = the browser sent NO Turnstile token (ser
 ## v0.45: message the developers
 Hero chat button (next to Share) or footer button -> sheet (`mode:'fb'` in `sheet()`, handlers `data-fb/fk/fs`) -> POST `/api/feedback` (Turnstile-gated, Worker validates) -> SQL `send_feedback()` -> table `feedback` (`supabase/migrate_v18.sql`, no public access). Read with admin_queries.sql section 9. Details, limits and deploy order: PROGRESS 60. `sw.js` is mh46.
 
+## v0.47: your posts + remove
+App asks `POST /api/mine` (SQL `my_posts`) for the ids this device posted/voted; own items get a 'Your report' tag and a two-tap Remove (`/api/unpost` -> `remove_post`), your votes are removed by tapping them again (`/api/unvote` -> `remove_vote`). Rules, limits and caveats: PROGRESS 62. SQL in `supabase/migrate_v19.sql`. `sw.js` is mh48.
+
+## v0.49: direction on stop reports
+Stop reports are line -> station -> direction (a / b / both). Column `incidents.dir`, view `live_incidents.dir`, `report_incident(..., p_dir)` in `supabase/migrate_v21.sql`; the alert card shows the direction. Rules and deploy order: PROGRESS 64.
+
 ## Before deploying (two 5-second checks, added after PROGRESS 56)
 1. `find web worker supabase -type f -size 0` must print NOTHING (an empty file means a broken edit).
-2. `grep -o "const V='[a-z0-9]*'" web/sw.js` must print the new cache version (mh47 for this release). If it prints nothing, sw.js is broken.
+2. `grep -o "const V='[a-z0-9]*'" web/sw.js` must print the new cache version (mh49 for this release). If it prints nothing, sw.js is broken.

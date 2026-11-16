@@ -124,11 +124,20 @@ export async function adminRoute(req, env, ctx, u, sb) {
         p_before: n('before', 1, 9e15),
         p_station: station.length >= 2 ? station : null }));
     }
+    if (sub === 'feedback') { const q = u.searchParams, sh = q.get('show'), l = +(q.get('limit') || 100); return ok(await sb('rpc/admin_feedback', { p_show: ['new', 'read', 'all'].includes(sh) ? sh : 'new', p_limit: Number.isInteger(l) && l >= 1 && l <= 200 ? l : 100 })); } // v0.48 riders' messages
     if (sub === 'incidents') return ok(await sb('rpc/admin_incidents', {}));
     if (sub === 'suspects') { const d = +(u.searchParams.get('days') || 7); return ok(await sb('rpc/admin_suspects', { p_days: Number.isInteger(d) && d >= 1 && d <= 30 ? d : 7 })); }
     if (sub === 'device') { const k = u.searchParams.get('k') || ''; if (!KEY.test(k)) return R({ r: 'bad' }, 400); return ok(await sb('rpc/admin_device', { p_k: k })); }
     if (sub === 'banned') return ok(await sb('rpc/admin_banned', {}));
     if (sub === 'log') return ok(await sb('rpc/admin_log_list', { p_limit: 80 }));
+  }
+  if (sub === 'fb' && req.method === 'POST') { // v0.48: mark read / unread / delete a rider message
+    const b = await req.json().catch(() => ({}));
+    const id = Number.isInteger(b.id) && b.id > 0 ? b.id : null;
+    if (!['read', 'unread', 'delete', 'readall'].includes(b.a) || (b.a !== 'readall' && !id)) return R({ r: 'bad' }, 400);
+    const r = await sb('rpc/admin_feedback_act', { p_act: b.a, p_id: id, p_ip: ik });
+    if (typeof r !== 'string') return R({ r: 'db' }, 500);
+    return ok({ r });
   }
   if (sub === 'act' && req.method === 'POST') {
     const b = await req.json().catch(() => ({}));

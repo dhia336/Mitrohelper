@@ -30,11 +30,13 @@ export default{async fetch(req,env,ctx){
   if(!al.includes('*')&&o&&!al.includes(o))return J({r:'bad'},403);
   const b=await req.json().catch(()=>null);if(!b||!devOk(b.dev))return J({r:'bad'},400);
   if(p=='/api/hit'){const src=typeof b.src=='string'&&/^[a-z0-9_-]{0,20}$/i.test(b.src)?b.src:'';const r=await sb('rpc/hit',{p_dev:b.dev,p_src:src,p_sa:b.sa===true});return typeof r=='string'?J({r}):J({r:'db'},500)} // v0.28: anonymous once-a-day visit (no IP stored)
+  if(p=='/api/mine'){const r=await sb('rpc/my_posts',{p_dev:b.dev});return r&&typeof r=='object'?J({r}):J({r:'db'},500)} // v0.47: ids of what this device posted/voted (private to the device id)
   if(p=='/api/me'){const r=await sb('rpc/my_stats',{p_dev:b.dev});return r&&typeof r=='object'?J({r}):J({r:'db'},500)} // v0.28: {reports,confirms} of this device, last 30 days
   const ip=req.headers.get('CF-Connecting-IP')||'?',base={p_dev:b.dev,p_ip:ip};let fn,args,human=false;
   if(p=='/api/report'&&int(b.station)&&(b.dir=='a'||b.dir=='b')){fn='report';args={...base,p_station:b.station,p_dir:b.dir};human=true}
-  else if(p=='/api/incident'&&int(b.station)){fn='report_incident';args={...base,p_station:b.station};human=true}
+  else if(p=='/api/incident'&&int(b.station)){fn='report_incident';args={...base,p_station:b.station,...(['a','b','x'].includes(b.dir)?{p_dir:b.dir}:{})};human=true}
   else if((p=='/api/vote'||p=='/api/ivote')&&int(b.id)&&(b.v==1||b.v==-1)){fn=p=='/api/vote'?'vote':'vote_incident';args={...base,p_id:b.id,p_v:b.v}}
+  else if((p=='/api/unpost'||p=='/api/unvote')&&int(b.id)&&(b.k=='s'||b.k=='i')){fn=p=='/api/unpost'?'remove_post':'remove_vote';args={...base,p_kind:b.k,p_id:b.id}} // v0.47: no CAPTCHA, rate limited in SQL
   else if(p=='/api/feedback'&&['idea','bug','other'].includes(b.kind)&&typeof b.msg=='string'&&b.msg.trim().length>=5&&b.msg.length<=1000){fn='send_feedback';args={...base,p_kind:b.kind,p_msg:b.msg,p_lang:['ar','fr','en'].includes(b.lang)?b.lang:'',p_ctx:typeof b.ctx=='string'&&/^[\w .:x-]{0,60}$/.test(b.ctx)?b.ctx:''};human=true} // v0.45
   else return J({r:'bad'},400);
   if(human&&env.TURNSTILE_SECRET){const f=new FormData();f.append('secret',env.TURNSTILE_SECRET);f.append('response',b.ts||'');f.append('remoteip',ip);
