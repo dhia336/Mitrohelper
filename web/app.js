@@ -193,4 +193,8 @@ if(/iphone|ipad/i.test(navigator.userAgent)&&!navigator.standalone)$('#inst').in
  if(localStorage.hitDay!==day){const r=await post('/hit',{src:localStorage.src||'',sa:matchMedia('(display-mode: standalone)').matches||navigator.standalone===true});if(r=='ok')localStorage.hitDay=day}
  if(localStorage.nrep||localStorage.lastRep){const m=await post('/me',{});if(m&&typeof m=='object'){const c=+m.confirms||0,p=+localStorage.seenUp||0;if(c>p)setTimeout(()=>toast(t('mc').replace('{n}',c-p)),2500);localStorage.seenUp=c}}}catch(_){}})();
 if(!nwRet()){try{localStorage.nwSeen=NEWV}catch(_){}}nwDot();
-if('serviceWorker'in navigator)navigator.serviceWorker.register('sw.js');
+// v0.53 auto-update: a new service worker takes over at once (skipWaiting + clients.claim in sw.js) and the page reloads ONCE when that happens,
+// so a deploy shows after the first visit instead of the second. Not on first install (no controller yet); a 30 s sessionStorage guard prevents any reload loop.
+if('serviceWorker'in navigator){const had=!!navigator.serviceWorker.controller;let rl=0;
+ navigator.serviceWorker.addEventListener('controllerchange',()=>{if(!had||rl)return;try{if(Date.now()-(+sessionStorage.swr||0)<30000)return;sessionStorage.swr=Date.now()}catch(_){}rl=1;location.reload()});
+ navigator.serviceWorker.register('sw.js').then(r=>{document.addEventListener('visibilitychange',()=>{if(!document.hidden)r.update().catch(()=>{})})}).catch(()=>{})}
