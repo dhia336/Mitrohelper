@@ -46,9 +46,10 @@ let okAt=0,bad=false,cnt=null;
 const agoS=n=>n<10?(lang=='ar'?'توّا':lang=='fr'?'à l’instant':'just now'):n<60?(lang=='ar'?'قبل '+n+' ث':lang=='fr'?'il y a '+n+' s':n+'s ago'):agoX(Math.floor(n/60));
 function upd(){const e=$('#upd'),j=document.querySelector('.jb');if(j)j.classList.toggle('off',bad);if(!e||!okAt)return;e.className='upd'+(bad?' bad':'');e.innerHTML=(bad?IC('alert')+t('upf'):'<i class="pd"></i>'+t('upl'))+' '+agoS(Math.round((Date.now()-okAt)/1000))}
 function toast(m,ms){const e=$('#toast');e.textContent=m;e.classList.add('s');clearTimeout(toast.i);toast.i=setTimeout(()=>e.classList.remove('s'),ms||2800)}
+function tsH(h){const e=$('#tsw');if(e)e.classList.toggle('h',!!h)} // v0.53: the widget is only visible while Cloudflare asks for a tap; hidden again as soon as a token arrives (the 'Success!' box used to stay over the buttons)
 function ts(){if(!C.TS)return;tok='';tsE='';tsI=0;tsP=1;
  const go=()=>{tsL=0;try{if(tid!=null)turnstile.reset(tid);else tid=turnstile.render('#tsw',{sitekey:C.TS,appearance:'interaction-only','retry-interval':4000,
-  callback:x=>{tok=x;tsE='';tsP=0},'expired-callback':()=>{tok=''},'error-callback':c=>{tsE='ts-e'+c;return true},'timeout-callback':()=>{tsE='ts-timeout'},'before-interactive-callback':()=>{tsI=1}})}catch(_){tsE='ts-js';tsP=0}};
+  callback:x=>{tok=x;tsE='';tsP=0;tsH(1)},'expired-callback':()=>{tok='';tsH(1)},'error-callback':c=>{tsE='ts-e'+c;return true},'timeout-callback':()=>{tsE='ts-timeout'},'before-interactive-callback':()=>{tsI=1;tsH(0)}})}catch(_){tsE='ts-js';tsP=0}};
  if(window.turnstile)go();else if(!tsL){tsL=1;const s=document.createElement('script');s.src='https://challenges.cloudflare.com/turnstile/v0/api.js?render=explicit';s.async=true;s.onload=go;s.onerror=()=>{tsL=0;tsE='ts-blocked';tsP=0;s.remove()};document.head.appendChild(s)}}
 addEventListener('keydown',e=>{if(e.key=='Escape'&&S.on){S={};sheet()}}); // v0.44: Esc closes the open sheet (desktop)
 // v0.43 pre-warm: start the token on the FIRST touch/scroll/key (not on CTA tap), so it is usually ready before the rider finishes the 3 taps.
