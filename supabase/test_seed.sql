@@ -19,3 +19,11 @@ select id,'seed-incident-0000001',md5('seed-i'),3,0,now()-interval '4 minutes' f
 -- To test the pause: open the test site, DevTools console: localStorage.dev='seed-troll-device-000001'; location.reload(); then try to report.
 insert into sightings(station_id,dir,dev,ip,seen_at,down)
 select id,'a','seed-troll-device-000001',md5('seed-t'),now()-interval '30 minutes',2 from stations where line_id='3' order by pos limit 3;
+
+-- bus 4C (needs migrate_v24.sql): one fresh sighting each way and a stop alert
+insert into sightings(station_id,dir,dev,ip,seen_at)
+select id,'a','seed-device-0000000b1',md5('seed-b1'),now()-interval '6 minutes' from stations where line_id='4C' order by pos offset 5 limit 1;
+insert into sightings(station_id,dir,dev,ip,seen_at)
+select id,'b','seed-device-0000000b2',md5('seed-b2'),now()-interval '12 minutes' from stations where line_id='4C' order by pos offset 9 limit 1;
+insert into incidents(station_id,dev,ip,up,down,last_at,dir)
+select id,'seed-incident-0000002',md5('seed-i2'),2,0,now()-interval '3 minutes','a' from stations where line_id='4C' order by pos offset 11 limit 1;

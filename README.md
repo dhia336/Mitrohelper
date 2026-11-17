@@ -11,7 +11,7 @@ worker/index.js                  the ONE Worker: serves web/ (ASSETS) + /api/*; 
 worker/admin.js                  admin backend: login (password + TOTP), session cookie, /api/admin/* routes and input validation
 worker/admin.html                admin page (one file: CSS + JS, light/dark, phone layout)
 web/index.html                   page shell, header, SVG icon sprite
-web/app.js                       all rider-site logic: i18n dictionary T (ar/fr/en), render, report/vote sheet, leaderboard, What's new
+web/app.js                       all rider-site logic: i18n dictionary T (ar/fr/en), render, report/vote sheet, leaderboard, What's new, Metro/Others tabs (setTab) and the static Others page (B4 bus data, othHTML)
 web/style.css                    all rider-site styles (design tokens, light/dark)
 web/fx.js                        theme toggle + tap animations (ripple, vote bursts, confetti)
 web/config.js                    API base and Turnstile site key (localhost/staging use Cloudflare's dummy key)
@@ -27,6 +27,8 @@ supabase/migrate_v15.sql         admin filters, scored suspects, device profile,
 supabase/migrate_v16.sql         interchange stations: other lines inside the 2-minute window (also inside schema.sql)
 supabase/migrate_v17.sql         same station + line, opposite direction (also inside schema.sql)
 supabase/archive/                migrate_v2 .. v13 and prod_catchup: already inside schema.sql, kept only to upgrade a DB older than v14 (see its README)
+supabase/migrate_v24.sql         buses: lines.kind + line 4C (also in rebuild_test_db.sql)
+supabase/migrate_v25.sql         same-train window grows with confirmations (report merge 3..11 min, live view 4..12 min)
 supabase/test_seed.sql           STAGING ONLY sample data (empties sightings and incidents): NEVER run on production
 supabase/admin_queries.sql       read-only abuse-review and retention queries (the admin Suspects tab covers the abuse ones)
 README.md, PROGRESS.md           this overview and the numbered log (older entries: docs/PROGRESS_ARCHIVE.md)
@@ -192,3 +194,8 @@ Sighting step 3 = toward A / toward B / both (`dir` a|b|x). `report()` in `supab
 ## Before deploying (two 5-second checks, added after PROGRESS 56)
 1. `find web worker supabase -type f -size 0` must print NOTHING (an empty file means a broken edit).
 2. `grep -o "const V='[a-z0-9]*'" web/sw.js` must print the new cache version (mh50 for this release). If it prints nothing, sw.js is broken.
+
+
+## Others page + live buses (v0.52)
+Two tabs under the header: **Metro** (unchanged) and **Others** (`tab='others'`, `setTab()`). Others lists **bus lines** (table `lines.kind='bus'`, currently **4C**, stations in `stations` like metro). The bus card is the SAME card as the metro one (`card()` inside `render()`): live sightings per direction, stop alerts, votes, remove-own. The report CTAs switch wording on the Others tab and the report sheet then lists bus lines only (metro sheet lists metro lines only). Client keeps metro lines in `lines`, bus lines in `bl`, `AL()` = both. Metro page counters ignore buses (`live_all().n` counts metro only; hero chips filter `isB()`).
+Direction a = toward Khéreddine, b = toward Jardin Thameur (4C/ ends at Bab Saadoun; Jardin Thameur, Rue Mrid and El Bordj are the 4C-only extension). SQL: `supabase/migrate_v24.sql`. `supabase/rebuild_test_db.sql` = schema + v18..v24 + test_seed in one file (TEST DB ONLY). To add a bus line: insert into `lines` (kind 'bus') + `stations`; no code change.

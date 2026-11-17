@@ -202,3 +202,15 @@ html.lenis,html.lenis body{height:auto}.lenis.lenis-smooth{scroll-behavior:auto!
 .vt .rm{margin-inline-start:auto;color:var(--rd);border-color:currentColor;font-size:.9rem}.vt .rm.arm{background:var(--rd);border-color:var(--rd);color:#fff}
 /* v0.49: direction line on a stop alert */
 .al .dr{display:flex;align-items:center;gap:.4rem;margin:.2rem 0 .1rem;font-weight:700;font-size:.9rem;color:var(--mu)}.al .dr .aw{width:1rem;height:1rem;flex:none}
+
+/* v0.52 Metro / Others tabs + Others page */
+.tabs{background:var(--bd);padding:.45rem 1rem}.tabs>div{display:flex;gap:.3rem;max-width:34rem;margin:auto}
+.tabs button{flex:1;padding:.55rem .5rem;border:0;border-radius:var(--r1);background:none;color:#ffffffb3;font-weight:800;font-size:.95rem}
+.tabs button.on{background:var(--ye);color:#1a1400}
+.hc2{display:flex;gap:.5rem;flex-wrap:wrap;margin:.3rem 0 .2rem}.oh{display:flex;align-items:center;gap:.5rem;margin:1.2rem 0 .2rem;font-size:1.25rem}.oh .ic{width:1.5rem;height:1.5rem}
+.os{margin:.2rem 0 .8rem;color:var(--mu);font-size:.9rem;font-weight:700;text-transform:uppercase;letter-spacing:.04em}
+.bn,.hd .mu.sm{white-space:normal}.bn{margin-top:.7rem;line-height:1.45}.card>.bn:last-child{margin-bottom:.9rem}.bx{margin:.9rem 0 -.2rem;color:var(--mu);font-size:.9rem}
+
+.hero.bus{background:linear-gradient(135deg,#5d0d14,#c1272d 55%,#ff7a45)}
+.hero.bus .bgl{position:absolute;inset-inline-end:-1rem;top:2.6rem;width:9.5rem;height:9.5rem;fill:none;stroke:#ffffff2e;stroke-width:1;stroke-linecap:round;stroke-linejoin:round}
+[dir=rtl] .hero.bus .bgl{transform:scaleX(-1)}
