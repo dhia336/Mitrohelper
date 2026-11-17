@@ -33,7 +33,7 @@ export default{async fetch(req,env,ctx){
   if(p=='/api/mine'){const r=await sb('rpc/my_posts',{p_dev:b.dev});return r&&typeof r=='object'?J({r}):J({r:'db'},500)} // v0.47: ids of what this device posted/voted (private to the device id)
   if(p=='/api/me'){const r=await sb('rpc/my_stats',{p_dev:b.dev});return r&&typeof r=='object'?J({r}):J({r:'db'},500)} // v0.28: {reports,confirms} of this device, last 30 days
   const ip=req.headers.get('CF-Connecting-IP')||'?',base={p_dev:b.dev,p_ip:ip};let fn,args,human=false;
-  if(p=='/api/report'&&int(b.station)&&(b.dir=='a'||b.dir=='b')){fn='report';args={...base,p_station:b.station,p_dir:b.dir};human=true}
+  if(p=='/api/report'&&int(b.station)&&(b.dir=='a'||b.dir=='b'||b.dir=='x')){fn='report';args={...base,p_station:b.station,p_dir:b.dir};human=true}
   else if(p=='/api/incident'&&int(b.station)){fn='report_incident';args={...base,p_station:b.station,...(['a','b','x'].includes(b.dir)?{p_dir:b.dir}:{})};human=true}
   else if((p=='/api/vote'||p=='/api/ivote')&&int(b.id)&&(b.v==1||b.v==-1)){fn=p=='/api/vote'?'vote':'vote_incident';args={...base,p_id:b.id,p_v:b.v}}
   else if((p=='/api/unpost'||p=='/api/unvote')&&int(b.id)&&(b.k=='s'||b.k=='i')){fn=p=='/api/unpost'?'remove_post':'remove_vote';args={...base,p_kind:b.k,p_id:b.id}} // v0.47: no CAPTCHA, rate limited in SQL
