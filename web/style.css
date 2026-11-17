@@ -214,3 +214,9 @@ html.lenis,html.lenis body{height:auto}.lenis.lenis-smooth{scroll-behavior:auto!
 .hero.bus{background:linear-gradient(135deg,#5d0d14,#c1272d 55%,#ff7a45)}
 .hero.bus .bgl{position:absolute;inset-inline-end:-1rem;top:2.6rem;width:9.5rem;height:9.5rem;fill:none;stroke:#ffffff2e;stroke-width:1;stroke-linecap:round;stroke-linejoin:round}
 [dir=rtl] .hero.bus .bgl{transform:scaleX(-1)}
+
+/* v0.53 less messy station list: legend + latest sighting per direction ringed, older ones (12+ min) faded */
+.lgd{display:flex;flex-wrap:wrap;gap:.3rem .9rem;margin:.8rem 0 -.2rem;padding:.45rem .6rem;border-radius:var(--r1);background:var(--bg);font-size:.78rem;font-weight:700;color:var(--mu)}
+.lgd .aw{width:.95rem;height:.95rem;stroke-width:3.2;vertical-align:-.15em;margin-inline-end:.25rem;color:var(--ink)}.lgd .lr{margin-inline-start:auto;font-weight:600}
+.sl em.cur{box-shadow:0 0 0 2px var(--cd),0 0 0 4px var(--ink)}
+.sl em.tr{opacity:.55}
