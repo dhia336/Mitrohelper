@@ -109,7 +109,7 @@ details.box{padding:.7rem .9rem}details.box summary{cursor:pointer;color:var(--m
 const $=s=>document.querySelector(s),app=$('#app');
 const h=(t,a,...c)=>{const e=document.createElement(t);for(const k in a||{}){if(k=='class')e.className=a[k];else if(k.startsWith('on'))e.addEventListener(k.slice(2),a[k]);else if(a[k]===false||a[k]==null){}else e.setAttribute(k,a[k]===true?'':a[k])}for(const x of c.flat())if(x!=null&&x!==false)e.append(x.nodeType?x:document.createTextNode(String(x)));return e};
 const NS='http://www.w3.org/2000/svg',sv=(t,a,...c)=>{const e=document.createElementNS(NS,t);for(const k in a||{})e.setAttribute(k,a[k]);c.flat().forEach(x=>e.append(x));return e};
-const IC={ov:'M4 20V10M10 20V4M16 20v-7M22 20H2',mod:'M9 6h11M9 12h11M9 18h11M4 6l1 1 2-2M4 12l1 1 2-2M4 18l1 1 2-2',sus:'M12 3l10 18H2L12 3zM12 10v5M12 18h.01',ban:'M12 3a9 9 0 100 18 9 9 0 000-18zM5.6 5.6l12.8 12.8',log:'M5 4h14v16H5zM9 9h6M9 13h6M9 17h3',fb:'M5 5h14a1 1 0 011 1v9a1 1 0 01-1 1h-7.5L7 19.5V16H5a1 1 0 01-1-1V6a1 1 0 011-1zM8 9.5h8M8 12.5h5',rf:'M20 11a8 8 0 10-2.3 5.7M20 4v7h-7',out:'M10 4H5v16h5M15 8l5 4-5 4M20 12H9',sun:'M12 8a4 4 0 100 8 4 4 0 000-8zM12 2v2M12 20v2M2 12h2M20 12h2M4.9 4.9l1.4 1.4M17.7 17.7l1.4 1.4M4.9 19.1l1.4-1.4M17.7 6.3l1.4-1.4',moon:'M20 14.5A8 8 0 019.5 4 8 8 0 1020 14.5z',tram:'M7 3h10a2 2 0 012 2v10a2 2 0 01-2 2H7a2 2 0 01-2-2V5a2 2 0 012-2zM5 11h14M9 7h.01M15 7h.01M8 21l1.5-4M16 21l-1.5-4'};
+const IC={ov:'M4 20V10M10 20V4M16 20v-7M22 20H2',mod:'M9 6h11M9 12h11M9 18h11M4 6l1 1 2-2M4 12l1 1 2-2M4 18l1 1 2-2',sus:'M12 3l10 18H2L12 3zM12 10v5M12 18h.01',ban:'M12 3a9 9 0 100 18 9 9 0 000-18zM5.6 5.6l12.8 12.8',log:'M5 4h14v16H5zM9 9h6M9 13h6M9 17h3',ins:'M3 3v18h18M7 15l4-4 3 3 5-6',fb:'M5 5h14a1 1 0 011 1v9a1 1 0 01-1 1h-7.5L7 19.5V16H5a1 1 0 01-1-1V6a1 1 0 011-1zM8 9.5h8M8 12.5h5',rf:'M20 11a8 8 0 10-2.3 5.7M20 4v7h-7',out:'M10 4H5v16h5M15 8l5 4-5 4M20 12H9',sun:'M12 8a4 4 0 100 8 4 4 0 000-8zM12 2v2M12 20v2M2 12h2M20 12h2M4.9 4.9l1.4 1.4M17.7 17.7l1.4 1.4M4.9 19.1l1.4-1.4M17.7 6.3l1.4-1.4',moon:'M20 14.5A8 8 0 019.5 4 8 8 0 1020 14.5z',tram:'M7 3h10a2 2 0 012 2v10a2 2 0 01-2 2H7a2 2 0 01-2-2V5a2 2 0 012-2zM5 11h14M9 7h.01M15 7h.01M8 21l1.5-4M16 21l-1.5-4'};
 const ic=n=>sv('svg',{viewBox:'0 0 24 24',fill:'none',stroke:'currentColor','stroke-width':2,'stroke-linecap':'round','stroke-linejoin':'round',class:'ic','aria-hidden':'true'},sv('path',{d:IC[n]}));
 const dark=()=>{const t=document.documentElement.dataset.theme;return t?t=='dark':matchMedia('(prefers-color-scheme:dark)').matches};
 try{if(localStorage.mhTheme)document.documentElement.dataset.theme=localStorage.mhTheme}catch{}
@@ -137,7 +137,7 @@ function loginView(msg){const pw=h('input',{type:'password',placeholder:'Passwor
 
 const setHH=()=>{const e=document.querySelector('header');if(e)document.documentElement.style.setProperty('--hh',e.offsetHeight+'px')};addEventListener('resize',setHH);
 async function start(){app.replaceChildren(shell());setHH();await show();get('feedback?show=new&limit=1').then(d=>setBadge(d.unread)).catch(()=>{});timer=setInterval(()=>{if(document.hidden)return;if(Date.now()-idle>25*6e4)return;if(tab=='ov')show(true)},6e4)}
-function shell(){const T=[['ov','Overview'],['mod','Moderate'],['fb','Messages'],['sus','Suspects'],['ban','Banned'],['log','Log']];
+function shell(){const T=[['ov','Overview'],['ins','Insights'],['mod','Moderate'],['fb','Messages'],['sus','Suspects'],['ban','Banned'],['log','Log']];
  const go=id=>{tab=id;document.querySelectorAll('[data-t]').forEach(b=>b.classList.toggle('on',b.dataset.t==id));const m=$('#m');if(m)m.replaceChildren(skel());scrollTo(0,0);show()};
  const th=h('button',{'aria-label':'Toggle theme',title:'Light / dark',onclick:()=>{setTheme(dark()?'light':'dark');th.replaceChildren(ic(dark()?'sun':'moon'))}},ic(dark()?'sun':'moon'));
  return h('div',null,h('header',null,brand(),
@@ -147,7 +147,7 @@ const fold=(bar,body,count)=>{const mob=matchMedia('(max-width:720px)').matches,
  bar.className='bar'+(mob?' cl':'');bar.append(tg,body);return n=>{tg.textContent='Filters'+(n?' · '+n+' active':'')}};
 const skel=()=>h('div',null,h('div',{class:'sk'}),h('div',{class:'sk'}),h('div',{class:'sk'}));
 
-async function show(quiet){const m=$('#m');if(!m)return;try{const f={ov:ov,mod:mod,fb:fbv,sus:sus,ban:ban,log:logv}[tab];const el=await f(),y=scrollY;m.replaceChildren(el);if(scrollY!==y)scrollTo(0,y)}catch(e){if(e.message!='auth'&&!quiet)toast('Error loading',1)}}
+async function show(quiet){const m=$('#m');if(!m)return;try{const f={ov:ov,ins:ins,mod:mod,fb:fbv,sus:sus,ban:ban,log:logv}[tab];const el=await f(),y=scrollY;m.replaceChildren(el);if(scrollY!==y)scrollTo(0,y)}catch(e){if(e.message!='auth'&&!quiet)toast('Error loading',1)}}
 const get=async p=>{const r=await api(p);if(r.s!=200)throw new Error('http');return r.j};
 async function act(a,o,msg){if(msg&&!confirm(msg))return;const r=await api('act',{a,...o});toast(r.j.r=='ok'?'Done':r.j.r=='nf'?'Not found (already gone)':'Failed',r.j.r!='ok'&&r.j.r!='nf');await show();return r.j.r=='ok'||r.j.r=='nf'}
 const kpi=(l,v,c)=>h('div',{class:'k '+(c||'')},h('small',null,l),h('b',null,v??0));
@@ -291,6 +291,60 @@ async function fbv(){const d=await get('feedback?show='+fbShow);setBadge(d.unrea
  return h('div',null,h('h2',null,'Messages from riders'),seg,cards.length?cards:h('p',{class:'mu'},'Nothing here'))}
 async function ban(){const b=await get('banned');return h('div',null,h('h2',null,'Banned devices / networks'),tbl(['Key','Last seen','Reports 30 d',''],b.map(r=>h('tr',null,h('td',null,copy(r.k)),h('td',null,r.last_seen?ago(r.last_seen)+' ago':'never'),h('td',null,r.reports30),h('td',null,h('button',{class:'sm',onclick:()=>act('unban',{k:r.k,note:'unban'},'Unban?')},'Unban'))))))}
 async function logv(){const l=await get('log');return h('div',null,h('h2',null,'Moderation log (latest 80)'),tbl(['When','Action','Target','Note'],l.map(r=>h('tr',null,h('td',null,tm(r.at)),h('td',null,r.act),h('td',null,copy(r.target)),h('td',null,r.note)))))}
+
+// ---- v0.56 Insights tab: share images (1080x1350 PNG, Tunisian Arabic) built from the real sightings of the last N days ----
+const MON=['جانفي','فيفري','مارس','أفريل','ماي','جوان','جويلية','أوت','سبتمبر','أكتوبر','نوفمبر','ديسمبر'];
+const dFmt=s=>{const [,m,d]=s.split('-');return +d+' '+MON[+m-1]};
+const wkTxt=n=>n==1?'أسبوع':n==2?'أسبوعين':n<=10?n+' أسابيع':n+' أسبوع';
+const dayTxt=(a,b)=>a+' من '+b+(b<=10?' أيام':' يوم');
+const lineLbl=id=>id=='TGM'?'TGM':'الخط '+id;
+const FONT='"Segoe UI","Noto Sans Arabic","Noto Sans",Tahoma,system-ui,sans-serif',WE='#0ea5b7',MUT='#8b97ad';
+const okc=c=>/^#[0-9a-f]{6}$/i.test(c||'')?c:'#3b82f6';
+const ink=c=>{const n=parseInt(okc(c).slice(1),16),l=(.299*(n>>16)+.587*(n>>8&255)+.114*(n&255))/255;return l>.62?'#0b1220':'#ffffff'};
+function mkCv(){const c=document.createElement('canvas');c.width=1080;c.height=1350;const x=c.getContext('2d');x.fillStyle='#0b1220';x.fillRect(0,0,1080,1350);return[c,x]}
+const TX=(x,s,px,py,o={})=>{x.font=(o.w||600)+' '+(o.s||24)+'px '+FONT;x.fillStyle=o.c||'#fff';x.textAlign=o.a||'right';x.textBaseline='middle';x.direction=o.d||'rtl';x.fillText(s,px,py)};
+const RR=(x,X,Y,W,H,r,f,st)=>{x.beginPath();x.roundRect(X,Y,W,H,r);if(f){x.fillStyle=f;x.fill()}if(st){x.strokeStyle=st;x.lineWidth=2;x.stroke()}};
+function hdr(x,L,title,sub){const c=okc(L.color);if(L.id.length>2){RR(x,899,64,120,82,24,c);TX(x,L.id,959,105,{s:34,w:800,a:'center',d:'ltr',c:ink(c)})}else{x.beginPath();x.arc(989,105,41,0,7);x.fillStyle=c;x.fill();TX(x,L.id,989,106,{s:46,w:800,a:'center',d:'ltr',c:ink(c)})}
+ const rx=L.id.length>2?880:930;TX(x,title,rx,78,{s:52,w:800});TX(x,sub,rx,134,{s:26,c:MUT})}
+function wrap(x,s,w){const out=[];let cur='';for(const t of s.split(' ')){const n=cur?cur+' '+t:t;if(cur&&x.measureText(n).width>w){out.push(cur);cur=t}else cur=n}if(cur)out.push(cur);return out}
+function foot(x,d){RR(x,60,1185,960,125,22,'#211a0c','#f59e0b');TX(x,'التوقّعات ممكن تغلط !',990,1214,{s:30,w:800,c:'#f59e0b'});
+ const w=Math.max(1,Math.round(d.days/7)),s='مبنية على '+wkTxt(w)+' تقريبا من تبليغات الناس (من '+dFmt(d.from)+' لين '+dFmt(d.to)+'). التبليغات من الناس، والواقع ممكن يختلف. استعملها كفكرة تقريبية برك.';
+ x.font='500 22px '+FONT;x.direction='rtl';wrap(x,s,925).slice(0,2).forEach((l,i)=>TX(x,l,990,1255+i*31,{s:22,w:500,c:'#d8cba9'}));
+ TX(x,'Mitrou',60,1332,{s:16,a:'left',d:'ltr',c:'#4b566b'})}
+function drawRepeat(L,d){const[c,x]=mkCv();hdr(x,L,'الأوقات اللي تتعاود',lineLbl(L.id)+' - الساعات اللي يتعاود فيها التبليغ برشا');
+ const col=okc(L.color),pc=ink(col),pw=ink(WE);
+ const rows=(list,tot,fill,tc,y0)=>list.forEach((r,i)=>{const Y=y0+i*78;RR(x,60,Y,960,70,16,'#111c33');RR(x,898,Y+15,110,40,10,fill);
+  TX(x,String(r.h).padStart(2,'0')+':00',953,Y+36,{s:26,w:800,a:'center',d:'ltr',c:tc});
+  TX(x,r.st,877,Y+25,{s:30,w:800});TX(x,'نحو '+(r.dir=='a'?L.a:L.b),877,Y+54,{s:20,c:MUT});
+  RR(x,330,Y+28,270,14,7,'#1b2842');const w=Math.max(14,270*r.dd/tot);RR(x,600-w,Y+28,w,14,7,fill);
+  TX(x,dayTxt(r.dd,tot),90,Y+35,{s:22,w:700,a:'left'})});
+ if(!L.rw.length&&!L.re.length)TX(x,'ما فماش تبليغات كافية للمدّة هاذي',540,300,{s:28,a:'center',c:MUT});
+ else{TX(x,'أيّام الأسبوع',990,229,{s:24,w:700,c:MUT});rows(L.rw,d.wd_days,col,pc,258);
+  if(L.re.length){const hy=258+L.rw.length*78+11;TX(x,'نهاية الأسبوع',990,hy,{s:24,w:700,c:MUT});rows(L.re,d.we_days,WE,pw,hy+32)}}
+ foot(x,d);return c}
+function chart(x,Y,title,ho,col){RR(x,60,Y,960,440,28,'#111c33');TX(x,title,985,Y+40,{s:30,w:800});TX(x,'نسبة الاحتمال في الساعة',95,Y+42,{s:20,c:MUT,a:'left'});
+ const H=[];for(let h=6;h<=22;h++)H.push(+ho[h]||0);const tot=H.reduce((a,b)=>a+b,0),P=H.map(v=>tot?100*v/tot:0),mx=Math.max(...P),top=Math.max(20,Math.ceil(mx/5)*5),base=Y+375,ph=250;
+ for(let g=5;g<=top;g+=5){const gy=base-ph*g/top;x.fillStyle='#1b2842';x.fillRect(88,gy,897,1);TX(x,g+'%',82,gy-1,{s:14,c:'#5d6a82',a:'right',d:'ltr'})}
+ H.forEach((v,i)=>{const bx=123+i*50.5,bh=Math.max(v?4:0,ph*P[i]/top),hi=tot>=10&&P[i]>=.7*mx;x.fillStyle=hi?col:'#27365a';x.fillRect(bx,base-bh,35,bh);
+  if(hi)TX(x,Math.round(P[i])+'%',bx+17.5,base-bh-16,{s:17,w:800,a:'center',d:'ltr'});TX(x,String(6+i),bx+17.5,base+20,{s:18,c:MUT,a:'center',d:'ltr'})});
+ TX(x,'الساعة (توقيت تونس)',540,base+53,{s:18,c:'#5d6a82',a:'center'});
+ if(tot<10)TX(x,'ما فماش تبليغات كافية',540,Y+210,{s:28,a:'center',c:MUT})}
+function drawForecast(L,d){const[c,x]=mkCv();hdr(x,L,'توقّعات '+lineLbl(L.id),'احتمال التبليغ في محطّة، في كل ساعة');
+ chart(x,185,'أيّام الأسبوع (الإثنين - الجمعة)',L.hw,okc(L.color));chart(x,650,'نهاية الأسبوع (السبت - الأحد)',L.he,'#22d3ee');foot(x,d);return c}
+function dlPng(c,name){c.toBlob(b=>{const u=URL.createObjectURL(b),a=h('a',{href:u,download:name});document.body.append(a);a.click();a.remove();setTimeout(()=>URL.revokeObjectURL(u),5e3)},'image/png')}
+let insDays=21,insLine=null;
+async function ins(){const D=await get('insights?days='+insDays);D.lines.forEach(l=>LC[l.id]=l.color);
+ if(!D.lines.find(l=>l.id==insLine))insLine=(D.lines.slice().sort((a,b)=>b.n-a.n)[0]||{}).id;const L=D.lines.find(l=>l.id==insLine);
+ const names=l=>['repeat','forecast'].map(k=>'mitrou-'+l.id+'-'+k+'-'+D.to+'.png');
+ const dlAll=async()=>{for(const l of D.lines.filter(l=>l.n>0)){const n=names(l);dlPng(drawRepeat(l,D),n[0]);await new Promise(r=>setTimeout(r,350));dlPng(drawForecast(l,D),n[1]);await new Promise(r=>setTimeout(r,350))}toast('Done')};
+ const sel=h('select',{onchange:e=>{insDays=+e.target.value;show()}},[14,21,28,42,60,90].map(n=>h('option',{value:n,selected:n==insDays},n+' days')));
+ const bar=h('div',{class:'row'},D.lines.map(l=>h('button',{class:'sm'+(l.id==insLine?' on':''),onclick:()=>{insLine=l.id;show()}},l.id+' · '+l.n)),sel);
+ const top=h('div',null,h('h2',null,'Insights: share images'),bar,h('p',{class:'mu'},'Built from '+D.days+' days of reports ('+D.from+' to '+D.to+', Tunis time, hidden reports and banned devices left out). '+D.wd_days+' weekdays and '+D.we_days+' weekend days. Rows need at least 2 different days. The number next to each line is its report count.'));
+ if(!L)return h('div',null,top,h('p',{class:'mu'},'No lines.'));
+ const c1=drawRepeat(L,D),c2=drawForecast(L,D),n=names(L);for(const c of[c1,c2])c.style.cssText='width:100%;height:auto;border-radius:10px';
+ const card=(c,t,f)=>h('div',{style:'flex:1 1 300px;max-width:460px'},h('div',{class:'row'},h('b',null,t),h('button',{class:'sm',onclick:()=>dlPng(c,f)},'Download PNG')),c);
+ return h('div',null,top,h('div',{class:'row'},h('button',{class:'sm',onclick:dlAll},'Download all lines (PNG)'),L.n<30?h('span',{class:'mu'},'Only '+L.n+' reports on this line: forecasts are weak.'):''),
+  h('div',{style:'display:flex;flex-wrap:wrap;gap:16px;margin-top:10px'},card(c1,'Repeating times',n[0]),card(c2,'Forecast by hour',n[1])))}
 
 (async()=>{const r=await fetch('/api/admin/ping',{headers:{'x-mh-admin':'1'},credentials:'same-origin',cache:'no-store'});r.status==200?start():lock()})();
 </script></body></html>
