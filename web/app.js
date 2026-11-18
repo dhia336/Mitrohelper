@@ -49,18 +49,21 @@ function toast(m,ms){const e=$('#toast');e.textContent=m;e.classList.add('s');cl
 function tsH(h){const e=$('#tsw');if(e)e.classList.toggle('h',!!h)} // v0.53: the widget is only visible while Cloudflare asks for a tap; hidden again as soon as a token arrives (the 'Success!' box used to stay over the buttons)
 function ts(){if(!C.TS)return;tok='';tsE='';tsI=0;tsP=1;
  const go=()=>{tsL=0;try{if(tid!=null)turnstile.reset(tid);else tid=turnstile.render('#tsw',{sitekey:C.TS,appearance:'interaction-only','retry-interval':4000,
-  callback:x=>{tok=x;tsE='';tsP=0;tsH(1)},'expired-callback':()=>{tok='';tsH(1)},'error-callback':c=>{tsE='ts-e'+c;return true},'timeout-callback':()=>{tsE='ts-timeout'},'before-interactive-callback':()=>{tsI=1;tsH(0)}})}catch(_){tsE='ts-js';tsP=0}};
+  callback:x=>{tok=x;tsE='';tsP=0;tsH(1)},'expired-callback':()=>{tok='';tsH(1);if(!document.hidden)ts()},'error-callback':c=>{tsE='ts-e'+c;return true},'timeout-callback':()=>{tsE='ts-timeout'},'before-interactive-callback':()=>{tsI=1;tsH(0)}})}catch(_){tsE='ts-js';tsP=0}};
  if(window.turnstile)go();else if(!tsL){tsL=1;const s=document.createElement('script');s.src='https://challenges.cloudflare.com/turnstile/v0/api.js?render=explicit';s.async=true;s.onload=go;s.onerror=()=>{tsL=0;tsE='ts-blocked';tsP=0;s.remove()};document.head.appendChild(s)}}
 addEventListener('keydown',e=>{if(e.key=='Escape'&&S.on){S={};sheet()}}); // v0.44: Esc closes the open sheet (desktop)
 // v0.43 pre-warm: start the token on the FIRST touch/scroll/key (not on CTA tap), so it is usually ready before the rider finishes the 3 taps.
 if(C.TS){const w=()=>{if(!tok&&!tsP)ts()};['pointerdown','touchstart','scroll','keydown'].forEach(e=>addEventListener(e,w,{once:true,passive:true}))}
 // v0.42: never post an empty token. Waits for the CAPTCHA token (15 s, 45 s once a visible challenge is shown), shows 'Checking...' after 1.2 s,
 // and if there is still no token fails with the real reason in lastC (ts-blocked = script blocked, ts-e<code> = widget error, ts-timeout, ts-js); retries once if the server rejects a token.
-async function send(p,b){for(let i=0;i<2;i++){if(C.TS){if(!tok&&!tsP)ts();const t0=Date.now();let sh=0;
+async function send(p,b){for(let i=0;i<2;i++){if(C.TS){if(!tok&&!tsP)ts();
+ if(i==1){const t0=Date.now();let sh=0; // 2nd try only: the server asked for the CAPTCHA (few unverified posts are allowed, see worker/index.js), so wait for the token
  while(!tok&&tsP&&Date.now()-t0<(tsI?45000:15000)){if(!sh&&Date.now()-t0>1200){sh=1;toast(t('chk'),50000)}await new Promise(r=>setTimeout(r,200))}
  if(sh)$('#toast').classList.remove('s');
- if(!tok){lastC=tsE||(window.turnstile?'ts-timeout':'ts-blocked');ts();return'bot'}}
- const r=await post(p,{...b,ts:tok});ts();if(r!='bot')return r}return'bot'}
+ if(!tok){lastC=tsE||(window.turnstile?'ts-timeout':'ts-blocked');ts();return'bot'}}}
+ const used=tok,r=await post(p,{...b,ts:used||''});if(C.TS&&used)ts();if(r!='bot')return r}return'bot'}
+// v0.55: the first try never waits for the CAPTCHA (token if the pre-warm already has one, else none); visible tab again with no token = start one
+document.addEventListener('visibilitychange',()=>{if(C.TS&&!document.hidden&&!tok&&!tsP&&tid!=null)ts()});
 function setLang(l){lang=localStorage.lang=l;document.documentElement.lang=l;document.documentElement.dir=l=='ar'?'rtl':'ltr';
  document.querySelectorAll('[data-g]').forEach(b=>b.classList.toggle('on',b.dataset.g==l));
  document.querySelectorAll('[data-tb]').forEach(b=>b.textContent=t(b.dataset.tb=='metro'?'tbm':'tbo'));ctaL();document.querySelector('.hq').setAttribute('aria-label',t('hwt'));document.title='MitroHelper';seen=0;render();sheet()}
