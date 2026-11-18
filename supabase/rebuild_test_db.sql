@@ -1,5 +1,5 @@
 -- MitroHelper v0.53: FULL REBUILD of a TEST database. Run once in Supabase > SQL Editor on an EMPTY project.
--- = schema.sql (up to v17) + migrate_v18..v25 + test_seed.sql. NEVER run on production (test_seed empties sightings/incidents).
+-- = schema.sql (up to v17) + migrate_v18..v26 + test_seed.sql. NEVER run on production (test_seed empties sightings/incidents).
 
 -- ===== schema.sql =====
 -- Run once in Supabase > SQL Editor. Safe to extend later (add rows, not code).
@@ -1443,3 +1443,11 @@ insert into sightings(station_id,dir,dev,ip,seen_at)
 select id,'b','seed-device-0000000b2',md5('seed-b2'),now()-interval '12 minutes' from stations where line_id='4C' order by pos offset 9 limit 1;
 insert into incidents(station_id,dev,ip,up,down,last_at,dir)
 select id,'seed-incident-0000002',md5('seed-i2'),2,0,now()-interval '3 minutes','a' from stations where line_id='4C' order by pos offset 11 limit 1;
+
+-- ===== migrate_v26.sql =====
+-- v0.54: line 4C is ONLY Bab Saadoun <-> Khereddine for now (it temporarily backs up the metro during the works; rider report).
+-- Removes the 3 stations that are not served (Jardin Thameur, Rue Mrid, El Bordj Mosque / Bab El Assel) and the separate "4C/" line
+-- ('4Cx') that an earlier draft of this file created. Their sightings/stop reports are deleted with them (ON DELETE CASCADE).
+-- Direction a = toward Khereddine, b = toward Bab Saadoun. Run once in the Supabase SQL editor; safe to re-run.
+delete from lines where id='4Cx';
+delete from stations where line_id='4C' and pos<40;

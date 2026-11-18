@@ -1,11 +1,13 @@
 /* MitroHelper v0.31 "station signage": flat colour fields, line-coloured sign bands, a departure board, SVG icons (sprite in index.html).
    No web font on purpose (fast first paint): system stack. No shadows, no stagger entrances. Motion: hero tram, live dots, freshness bars, alert pulse, tap feedback. */
-:root{--bg:#eceee9;--cd:#fff;--ink:#14201a;--mu:#55655c;--ln:#d8ddd6;--gr:#00793f;--on:#fff;--ye:#ffd23f;--rd:#e5383b;--bd:#14201a;--nt:#000;--r1:.55rem;--r2:.9rem;--ez:cubic-bezier(.2,.85,.2,1);color-scheme:light}
+:root{--bg:#eceee9;--cd:#fff;--ink:#14201a;--mu:#55655c;--ln:#d8ddd6;--gr:#00793f;--on:#fff;--ye:#ffd23f;--rd:#e5383b;--bd:#14201a;--nt:#fff;--r1:.55rem;--r2:.9rem;--ez:cubic-bezier(.2,.85,.2,1);color-scheme:light}
 :root[data-theme=dark]{color-scheme:dark;--bg:#0f161b;--cd:#18222a;--ink:#e9f0ec;--mu:#8fa1a8;--ln:#27343d;--gr:#3fd08f;--on:#05150d;--bd:#0a1014;--nt:#fff}
 @media(prefers-color-scheme:dark){:root:not([data-theme]){color-scheme:dark;--bg:#0f161b;--cd:#18222a;--ink:#e9f0ec;--mu:#8fa1a8;--ln:#27343d;--gr:#3fd08f;--on:#05150d;--bd:#0a1014;--nt:#fff}}
 [dir=rtl]{--d:-1}
 *{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
-body{margin:0;background:var(--bg);color:var(--ink);font:16px/1.4 system-ui,-apple-system,"Segoe UI",Roboto,"Noto Sans Arabic",Tahoma,sans-serif;font-variant-numeric:tabular-nums}
+body{margin:0;background:var(--bg);color:var(--ink);font:16px/1.4 system-ui,-apple-system,"Segoe UI",Roboto,"Noto Sans Arabic",Tahoma,sans-serif;}
+html[lang=ar] body{font-family:"Noto Sans Arabic","Segoe UI",system-ui,-apple-system,Roboto,Tahoma,sans-serif}
+.tm,.ty,.lj small,.mr strong,.lb li strong{font-variant-numeric:tabular-nums}
 button{font:inherit;color:inherit;cursor:pointer}
 svg{width:1.5rem;height:1.5rem;fill:none;stroke:currentColor;stroke-width:1.9;stroke-linecap:round;stroke-linejoin:round}
 .ic{flex:none;width:1.15em;height:1.15em;vertical-align:-.2em}.ic.in{width:1em;height:1em;margin-inline:.15em;stroke-width:2.6;vertical-align:-.12em}
@@ -51,7 +53,7 @@ main{max-width:34rem;margin:auto;padding:0 1rem calc(6.5rem + env(safe-area-inse
 .wd{position:absolute;top:-.15rem;inset-inline-end:.1rem;width:.7rem;height:.7rem;border-radius:50%;background:var(--rd);border:2px solid var(--bd)}
 
 /* line card: coloured sign band + white body */
-.b{flex:none;min-width:2.8rem;height:2.8rem;padding:0 .3rem;border-radius:var(--r1);background:var(--c);display:grid;place-items:center;font:800 1.4rem/1 system-ui,sans-serif;color:var(--ct,#fff)}.b.t{font-size:.8rem}
+.b{flex:none;min-width:2.8rem;height:2.8rem;padding:0 .3rem;border-radius:var(--r1);background:var(--c);display:grid;place-items:center;font:800 1.4rem/1 system-ui,sans-serif;color:var(--ct,#fff);text-shadow:0 1px 2px #0000004d}.b.t{font-size:.8rem}
 .card{--c:#999;margin-bottom:.9rem;border:1px solid var(--ln);border-radius:var(--r2);background:var(--cd);overflow:hidden;scroll-margin-top:calc(var(--hh,3.5rem) + 4.4rem)}
 .card>:not(.hd){margin-inline:1rem}.card>.tk{margin-bottom:.9rem}
 .hd{display:flex;align-items:center;gap:.8rem;padding:.7rem 1rem;background:var(--c);color:var(--bt,#000)}.hd>div{flex:1;min-width:0}
@@ -204,8 +206,10 @@ html.lenis,html.lenis body{height:auto}.lenis.lenis-smooth{scroll-behavior:auto!
 .al .dr{display:flex;align-items:center;gap:.4rem;margin:.2rem 0 .1rem;font-weight:700;font-size:.9rem;color:var(--mu)}.al .dr .aw{width:1rem;height:1rem;flex:none}
 
 /* v0.52 Metro / Others tabs + Others page */
-.tabs{background:var(--bd);padding:.45rem 1rem}.tabs>div{display:flex;gap:.3rem;max-width:34rem;margin:auto}
-.tabs button{flex:1;padding:.55rem .5rem;border:0;border-radius:var(--r1);background:none;color:#ffffffb3;font-weight:800;font-size:.95rem}
+.tabs{background:var(--cd);border-bottom:1px solid var(--ln);padding:.45rem 1rem}.tabs>div{display:flex;gap:.3rem;max-width:34rem;margin:auto}
+.tabs button{flex:1;padding:.55rem .5rem;border:0;border-radius:var(--r1);background:none;color:var(--mu);font-weight:800;font-size:.95rem}
+:root[data-theme=dark] .tabs{background:var(--bd);border-bottom-color:transparent}:root[data-theme=dark] .tabs button{color:#ffffffb3}:root[data-theme=dark] .tabs button.on{color:#1a1400}
+@media(prefers-color-scheme:dark){:root:not([data-theme]) .tabs{background:var(--bd);border-bottom-color:transparent}:root:not([data-theme]) .tabs button{color:#ffffffb3}:root:not([data-theme]) .tabs button.on{color:#1a1400}}
 .tabs button.on{background:var(--ye);color:#1a1400}
 .hc2{display:flex;gap:.5rem;flex-wrap:wrap;margin:.3rem 0 .2rem}.oh{display:flex;align-items:center;gap:.5rem;margin:1.2rem 0 .2rem;font-size:1.25rem}.oh .ic{width:1.5rem;height:1.5rem}
 .os{margin:.2rem 0 .8rem;color:var(--mu);font-size:.9rem;font-weight:700;text-transform:uppercase;letter-spacing:.04em}
