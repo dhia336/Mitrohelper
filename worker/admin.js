@@ -111,7 +111,7 @@ export async function adminRoute(req, env, ctx, u, sb) {
   if (req.method === 'GET') {
     if (sub === 'ping') return ok({ r: 'ok' });
     if (sub === 'stats') return ok(await sb('rpc/admin_stats', {}));
-    if (sub === 'insights') { const d = +(u.searchParams.get('days') || 21); return ok(await sb('rpc/admin_insights', { p_days: Number.isInteger(d) && d >= 7 && d <= 90 ? d : 21 })); } // v0.56 share images
+    if (sub === 'insights') { const d = +(u.searchParams.get('days') || 21); const bk = +(u.searchParams.get('bucket') || 15); return ok(await sb('rpc/admin_insights', { p_days: Number.isInteger(d) && d >= 7 && d <= 90 ? d : 21, p_bucket: [15, 30, 60].includes(bk) ? bk : 15 })); } // v0.56 share images
     if (sub === 'recent') { // v0.36 filters: every value is validated here AND bound as a function argument in SQL (no string building)
       const q = u.searchParams, g = k => (q.get(k) || '').trim(), n = (k, lo, hi) => { const v = g(k); return /^\d{1,10}$/.test(v) && +v >= lo && +v <= hi ? +v : null; };
       const line = g('line'), dev = g('dev'), st = g('status'), dir = g('dir'), station = g('station').slice(0, 40);

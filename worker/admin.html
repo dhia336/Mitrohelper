@@ -314,7 +314,7 @@ function foot(x,d){RR(x,60,1185,960,125,22,'#211a0c','#f59e0b');TX(x,'التوق
 function drawRepeat(L,d){const[c,x]=mkCv();hdr(x,L,'الأوقات اللي تتعاود',lineLbl(L.id)+' - الساعات اللي يتعاود فيها التبليغ برشا');
  const col=okc(L.color),pc=ink(col),pw=ink(WE);
  const rows=(list,tot,fill,tc,y0)=>list.forEach((r,i)=>{const Y=y0+i*78;RR(x,60,Y,960,70,16,'#111c33');RR(x,898,Y+15,110,40,10,fill);
-  TX(x,String(r.h).padStart(2,'0')+':00',953,Y+36,{s:26,w:800,a:'center',d:'ltr',c:tc});
+  TX(x,String(Math.floor(r.m/60)).padStart(2,'0')+':'+String(r.m%60).padStart(2,'0'),953,Y+36,{s:26,w:800,a:'center',d:'ltr',c:tc});
   TX(x,r.st,877,Y+25,{s:30,w:800});TX(x,'نحو '+(r.dir=='a'?L.a:L.b),877,Y+54,{s:20,c:MUT});
   RR(x,330,Y+28,270,14,7,'#1b2842');const w=Math.max(14,270*r.dd/tot);RR(x,600-w,Y+28,w,14,7,fill);
   TX(x,dayTxt(r.dd,tot),90,Y+35,{s:22,w:700,a:'left'})});
@@ -332,14 +332,15 @@ function chart(x,Y,title,ho,col){RR(x,60,Y,960,440,28,'#111c33');TX(x,title,985,
 function drawForecast(L,d){const[c,x]=mkCv();hdr(x,L,'توقّعات '+lineLbl(L.id),'احتمال التبليغ في محطّة، في كل ساعة');
  chart(x,185,'أيّام الأسبوع (الإثنين - الجمعة)',L.hw,okc(L.color));chart(x,650,'نهاية الأسبوع (السبت - الأحد)',L.he,'#22d3ee');foot(x,d);return c}
 function dlPng(c,name){c.toBlob(b=>{const u=URL.createObjectURL(b),a=h('a',{href:u,download:name});document.body.append(a);a.click();a.remove();setTimeout(()=>URL.revokeObjectURL(u),5e3)},'image/png')}
-let insDays=21,insLine=null;
-async function ins(){const D=await get('insights?days='+insDays);D.lines.forEach(l=>LC[l.id]=l.color);
+let insDays=21,insBucket=15,insLine=null;
+async function ins(){const D=await get('insights?days='+insDays+'&bucket='+insBucket);D.lines.forEach(l=>LC[l.id]=l.color);
  if(!D.lines.find(l=>l.id==insLine))insLine=(D.lines.slice().sort((a,b)=>b.n-a.n)[0]||{}).id;const L=D.lines.find(l=>l.id==insLine);
  const names=l=>['repeat','forecast'].map(k=>'mitrou-'+l.id+'-'+k+'-'+D.to+'.png');
  const dlAll=async()=>{for(const l of D.lines.filter(l=>l.n>0)){const n=names(l);dlPng(drawRepeat(l,D),n[0]);await new Promise(r=>setTimeout(r,350));dlPng(drawForecast(l,D),n[1]);await new Promise(r=>setTimeout(r,350))}toast('Done')};
  const sel=h('select',{onchange:e=>{insDays=+e.target.value;show()}},[14,21,28,42,60,90].map(n=>h('option',{value:n,selected:n==insDays},n+' days')));
- const bar=h('div',{class:'row'},D.lines.map(l=>h('button',{class:'sm'+(l.id==insLine?' on':''),onclick:()=>{insLine=l.id;show()}},l.id+' · '+l.n)),sel);
- const top=h('div',null,h('h2',null,'Insights: share images'),bar,h('p',{class:'mu'},'Built from '+D.days+' days of reports ('+D.from+' to '+D.to+', Tunis time, hidden reports and banned devices left out). '+D.wd_days+' weekdays and '+D.we_days+' weekend days. Rows need at least 2 different days. The number next to each line is its report count.'));
+ const sb2=h('select',{onchange:e=>{insBucket=+e.target.value;show()}},[[15,'15 min slots'],[30,'30 min slots'],[60,'1 hour slots']].map(([n,l])=>h('option',{value:n,selected:n==insBucket},l)));
+ const bar=h('div',{class:'row'},D.lines.map(l=>h('button',{class:'sm'+(l.id==insLine?' on':''),onclick:()=>{insLine=l.id;show()}},l.id+' · '+l.n)),sel,sb2);
+ const top=h('div',null,h('h2',null,'Insights: share images'),bar,h('p',{class:'mu'},'Built from '+D.days+' days of reports ('+D.from+' to '+D.to+', Tunis time). Votes: reports riders rated wrong (more down than up) and banned devices are left out, and confirmed reports weigh up to 3x in the hour chart and in ties. '+D.wd_days+' weekdays and '+D.we_days+' weekend days. Repeating-times rows need at least 2 different days; smaller slots find fewer repeats. The number next to each line is its report count.'));
  if(!L)return h('div',null,top,h('p',{class:'mu'},'No lines.'));
  const c1=drawRepeat(L,D),c2=drawForecast(L,D),n=names(L);for(const c of[c1,c2])c.style.cssText='width:100%;height:auto;border-radius:10px';
  const card=(c,t,f)=>h('div',{style:'flex:1 1 300px;max-width:460px'},h('div',{class:'row'},h('b',null,t),h('button',{class:'sm',onclick:()=>dlPng(c,f)},'Download PNG')),c);
